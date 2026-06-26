@@ -1,6 +1,6 @@
 <div align="center">
 
-[![Logo](https://raw.githubusercontent.com/puruslang/linter/refs/heads/main/logo.png)](https://purus.work)
+[![Logo](https://raw.githubusercontent.com/puruslang/assets/main/logo.png)](https://purus.work)
 
 [English](https://github.com/puruslang/linter#readme) | **日本語**
 
@@ -9,8 +9,8 @@
 ---
 
 [![CI](https://github.com/puruslang/linter/actions/workflows/ci.yml/badge.svg)](https://github.com/puruslang/linter/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/purus)](https://www.npmjs.com/package/purus)
-[![npm downloads](https://img.shields.io/npm/dm/purus)](https://www.npmjs.com/package/purus)
+[![npm](https://img.shields.io/npm/v/%40puruslang%2Flinter)](https://www.npmjs.com/package/%40puruslang%2Flinter)
+[![npm downloads](https://img.shields.io/npm/dm/%40puruslang%2Flinter)](https://www.npmjs.com/package/%40puruslang%2Flinter)
 [![License](https://img.shields.io/github/license/puruslang/linter)](https://github.com/puruslang/linter/blob/main/LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-brightgreen)](https://nodejs.org/)
 [![VS Code Extension](https://img.shields.io/visual-studio-marketplace/i/otoneko1102.purus)](https://marketplace.visualstudio.com/items?itemName=otoneko1102.purus)
@@ -77,4 +77,4 @@ otoneko. https://github.com/otnc
 
 ## ライセンス
 
-Apache 2.0 ライセンスに基づいて配布されます。詳細については、[LICENSE](https://raw.githubusercontent.com/puruslang/linter/refs/heads/main/LICENSE) を参照してください。
+Apache 2.0 ライセンスに基づいて配布されます。詳細については、[LICENSE](https://github.com/puruslang/linter/blob/main/LICENSE) を参照してください。
