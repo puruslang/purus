@@ -1,7 +1,7 @@
 import {
-  "username/core/src/lexer" @lexer,
-  "username/core/src/parser" @parser,
-  "username/core/src/codegen" @codegen,
+  "puruslang/purus/src/lexer" @lexer,
+  "puruslang/purus/src/parser" @parser,
+  "puruslang/purus/src/codegen" @codegen,
   "moonbitlang/x/sys" @sys,
   "moonbitlang/x/fs" @fs,
 }

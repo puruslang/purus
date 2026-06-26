@@ -1,3 +1,3 @@
 import {
-  "username/core/src/lexer" @lexer,
+  "puruslang/purus/src/lexer" @lexer,
 }
