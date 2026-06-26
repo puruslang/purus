@@ -1,0 +1,34 @@
+{
+  "name": "@puruslang/prettier-plugin-purus",
+  "version": "1.0.0",
+  "description": "Prettier plugin for the Purus language",
+  "license": "Apache-2.0",
+  "main": "src/index.js",
+  "keywords": [
+    "prettier",
+    "plugin",
+    "purus",
+    "altjs",
+    "lang",
+    "language",
+    "noshift"
+  ],
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
+  "author": "otoneko. (https://github.com/otnc)",
+  "homepage": "https://purus.work",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puruslang/prettier-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/puruslang/prettier-plugin/issues"
+  },
+  "funding": {
+    "url": "https://github.com/sponsors/otnc"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
