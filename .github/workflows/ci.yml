@@ -14,4 +14,5 @@ jobs:
         with:
           node-version: "22"
       - run: npm install
+      - run: chmod +x node_modules/.bin/* || true
       - run: npm test
