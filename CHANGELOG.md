@@ -4,6 +4,16 @@ Change history for `@puruslang/prettier-plugin-purus`.
 
 ---
 
+## v1.0.1 (2026-06-26)
+
+### Bug Fixes
+
+- Fixed logo URL in README (now references puruslang/assets)
+- Fixed npm badge to show `@puruslang/prettier-plugin-purus` version
+- Fixed `//;...;//` string formatting: semicolons inside strings no longer get extra spaces
+
+---
+
 ## v1.0.0 (2026-06-26)
 
 ### Initial Release
