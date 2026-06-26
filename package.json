@@ -14,7 +14,7 @@
     "noshift"
   ],
   "scripts": {
-    "test": "vitest run"
+    "test": "npx vitest run"
   },
   "peerDependencies": {
     "prettier": "^3.0.0"
