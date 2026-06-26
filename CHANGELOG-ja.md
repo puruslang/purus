@@ -1,6 +1,6 @@
 # Changelog
 
-Purus の構文・仕様・予約語に関する変更履歴です。
+@puruslang/prettier-plugin-purus の変更履歴。
 
 ---
 
