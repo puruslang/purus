@@ -349,9 +349,11 @@ function formatPurus(source, options = {}) {
       }
     }
 
-    // Ensure space after comma/semicolon
-    lineStr = lineStr.replace(/,(?!\s)/g, ", ");
-    lineStr = lineStr.replace(/;(?!\s)/g, "; ");
+    // Ensure space after comma/semicolon — but NOT inside string tokens
+    lineStr = lineStr.replace(/(\/\/;.*?;\/\/|\/\/\/[\s\S]*?\/\/\/)|([,;])(?!\s)/g, (m, str, sep) => {
+      if (str) return str; // preserve string contents unchanged
+      return sep + " ";
+    });
 
     // No trailing whitespace
     lineStr = lineStr.trimEnd();
@@ -399,4 +401,4 @@ const printers = {
   },
 };
 
-module.exports = { languages, parsers, printers };
+module.exports = { languages, parsers, printers, formatPurus };
