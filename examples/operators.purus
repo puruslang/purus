@@ -1,0 +1,71 @@
+-- Operators
+
+-- Arithmetic
+const sum be 10 add 5
+const diff be 10 sub 5
+const product be 10 mul 5
+const quotient be 10 div 5
+const remainder be 10 mod 3
+const power be 2 pow 10
+const neg-value be neg 42
+
+-- Comparison
+const is-equal be 1 eq 1
+const not-equal be 1 neq 2
+const also-not-equal be 1 not eq 2
+const is-less be 1 lt 2
+const is-greater be 2 gt 1
+const is-lte be 1 le 1
+const also-lte be 1 lt eq 1
+const is-gte be 2 ge 2
+const also-gte be 2 gt eq 2
+
+-- Logical
+const both be true and false
+const either be true or false
+const negated be not true
+const not-flag be false
+
+-- Nullish coalescing
+const a be null
+const b be a coal //;fallback;//
+const c be a coal b coal //;default;//
+
+-- Pipeline
+use p-json as j
+const data be [1, 2, 3, 4, 5]
+const result be data pipe j.stringify
+data pipe console.log
+
+-- Exponentiation (right-associative)
+const big be 2 pow 3 pow 2
+
+-- Bitwise
+const bit-and be 0b1100 band 0b1010
+const bit-or be 0b1100 bor 0b1010
+const bit-xor be 0b1100 bxor 0b1010
+const bit-not be bnot 0b1100
+const shifted-left be 1 shl 4
+const shifted-right be 16 shr 2
+const unsigned-shift be -1 ushr 0
+
+-- Array ranges
+const inclusive be [0..5]
+const exclusive be [0...5]
+
+-- Slicing
+const numbers be [0, 1, 2, 3, 4, 5, 6]
+const middle be numbers[\2..4]
+const partial be numbers[\1...4]
+
+-- Splicing
+let arr be [0, 1, 2, 3, 4, 5, 6]
+arr[\2..4] be [//;a;//; //;b;//; //;c;//]
+
+-- Destructuring (array)
+const weather be [//;Sunny;//; //;Rainy;//]
+const [today; tomorrow] be weather
+
+-- Destructuring (object)
+const config be [host be //;localhost;//, port be 3000]
+const object[host; port] be config

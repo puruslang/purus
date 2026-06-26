@@ -1,0 +1,3 @@
+let name be //;Purus;//
+const message be //;Welcome to [name]!;//
+console.log[message] -- Welcome to Purus!

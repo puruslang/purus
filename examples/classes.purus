@@ -1,0 +1,77 @@
+-- classes.purus
+-- Class syntax example
+
+-- Basic class
+class Animal
+  private name
+  private sound
+
+  fn new name; sound
+    this.name be name
+    this.sound be sound
+
+  get fn name to this.name
+
+  fn speak
+    console.log[//;[this.name] says [this.sound];//]
+
+-- Inheritance
+class Dog extends Animal
+  fn new name
+    super[name; //;woof;//]
+
+  fn fetch item
+    console.log[//;[this.name] fetches the [item];//]
+
+-- Static methods and private fields
+class Counter
+  private count be 0
+
+  fn increment
+    this.count be this.count add 1
+
+  fn decrement
+    this.count be this.count sub 1
+
+  get fn value to this.count
+
+  static fn create
+    return new Counter[]
+
+-- Getter and setter
+class Temperature
+  private celsius
+
+  fn new celsius
+    this.celsius be celsius
+
+  get fn fahrenheit to this.celsius mul 1.8 add 32
+
+  set fn fahrenheit value
+    this.celsius be value sub 32 div 1.8
+
+-- Async methods
+class Api
+  private base-url
+
+  fn new base-url
+    this.base-url be base-url
+
+  async fn fetch-data path
+    const url be //;[this.base-url][path];//
+    const res be await fetch[url]
+    return res.json[]
+
+-- Usage
+const dog be new Dog[//;Rex;//]
+dog.speak[]
+dog.fetch[//;ball;//]
+
+const counter be Counter.create[]
+counter.increment[]
+counter.increment[]
+counter.increment[]
+console.log[counter.value]
+
+const temp be new Temperature[100]
+console.log[temp.fahrenheit]

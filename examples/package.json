@@ -1,0 +1,14 @@
+{
+  "name": "purus-examples",
+  "version": "0.0.0",
+  "main": "_",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "otoneko.",
+  "license": "Apache-2.0",
+  "description": "",
+  "dependencies": {
+    "purus": "file:../core"
+  }
+}

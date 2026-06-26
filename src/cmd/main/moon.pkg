@@ -1,0 +1,11 @@
+import {
+  "username/core/src/lexer" @lexer,
+  "username/core/src/parser" @parser,
+  "username/core/src/codegen" @codegen,
+  "moonbitlang/x/sys" @sys,
+  "moonbitlang/x/fs" @fs,
+}
+
+options(
+  "is-main": true,
+)

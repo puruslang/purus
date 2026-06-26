@@ -1,0 +1,60 @@
+-- Control Flow
+
+const x be 42
+
+-- If / elif / else
+if x gt 100
+  console.log[//;big;//]
+elif x gt 10
+  console.log[//;medium;//]
+else
+  console.log[//;small;//]
+
+-- Unless (negated if)
+unless x eq 0
+  console.log[//;x is not zero;//]
+
+-- Inline ternary
+const label be if x gt 0 then //;positive;// else //;non-positive;//
+
+-- Postfix conditional
+console.log[//;even;//] if x mod 2 eq 0
+
+-- While loop
+let count be 0
+while count lt 5
+  console.log[count]
+  count add be 1
+
+-- Until loop (negated while)
+let n be 10
+until n le 0
+  n sub be 1
+
+-- For-in loop
+const items be [//;apple;//; //;banana;//; //;cherry;//]
+for item in items
+  console.log[item]
+
+-- For-in with index
+for i; item in items
+  console.log[i; item]
+
+-- For range loop (classic style)
+for let i be 0; i lt 10; i\add
+  console.log[i]
+
+-- Switch expression
+const status be //;ok;//
+switch status
+  case //;ok;//
+    console.log[//;success;//]
+  case //;error;//
+    console.log[//;failure;//]
+  default
+    console.log[//;unknown;//]
+
+-- Match expression (deprecated, use switch instead)
+match status
+  when //;ok;// then console.log[//;ok;//]
+  else console.log[//;other;//]

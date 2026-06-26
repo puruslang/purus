@@ -1,0 +1,45 @@
+-- Functions
+
+-- Named function with block body
+fn greet name
+  console.log[//;Hello, ;// add name add //;!;//]
+
+-- Named function with expression body (no return)
+fn double x to x mul 2
+
+-- Named function with explicit return
+fn triple x to return x mul 3
+
+-- Function with no arguments
+fn say-hello
+  console.log[//;Hello!;//]
+
+-- Function with no arguments (expression body)
+fn get-timestamp to Date.now[]
+
+-- Multiple parameters (separated by semicolons)
+fn add-numbers a; b to a add b
+
+-- Anonymous function
+const square be fn x to x mul 2
+
+-- Anonymous function with no arguments
+const get-time be fn to Date.now[]
+
+-- Async function
+async fn fetch-data url
+  const res be await fetch[url]
+  return res
+
+-- Function calls
+greet[//;World;//]
+say-hello[]
+const result be add-numbers[3; 4]
+
+-- Nested function calls use semicolons to separate args
+use p-math as m
+console.log[m.max[1; 2]]
+console.log[add-numbers[10; 20]]
+
+-- Type annotations (erased in output)
+fn multiply a of Number; b of Number gives Number to a mul b

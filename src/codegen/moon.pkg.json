@@ -1,0 +1,8 @@
+{
+  "import": [
+    { "path": "username/core/src/parser", "alias": "parser" }
+  ],
+  "test-import": [
+    { "path": "username/core/src/lexer", "alias": "lexer" }
+  ]
+}

@@ -1,0 +1,52 @@
+-- Variables and Data Types
+
+-- Constants
+const name be //;Alice;//
+const age be 30
+const pi be 3.14159
+const is-active be true
+
+-- Variables
+let score be 100
+score add be 50
+var food be //;apple;//
+let dessert be //;banana;// -- Bare variable assignment is not supported (since v0.10.x)
+
+-- Underscores in identifiers (equivalent to hyphens)
+const my_variable be 42
+const my-variable2 be 43
+
+-- Null and undefined
+const nothing be null
+const also-nothing be nil
+const not-set be undefined
+
+-- Arrays
+const numbers be [1, 2, 3, 4, 5]
+const mixed be [//;hello;//; 42; true; null]
+
+-- Objects
+const person be [name be //;Bob;//, age be 25]
+const empty-obj be [be]
+
+-- Destructuring (array)
+const weather be [//;Sunny;//; //;Rainy;//]
+const [today; tomorrow] be weather
+
+-- Destructuring (object)
+const config be [host be //;localhost;//, port be 8080]
+const object[host; port] be config
+
+-- Nullish coalescing
+const value be null
+const result be value coal //;default;//
+
+-- String interpolation
+const user be //;World;//
+const greeting be //;Hello, [user]!;//
+const msg be //;[name] is [age] years old;//
+
+-- Semicolon strings: //;...;// (preferred for URLs and content with //)
+const api-url be //;https://api.example.com/v1;//
+const endpoint be //;https://example.com/search?q=[query];//
+const with-slash be //;path/to/file.js;//

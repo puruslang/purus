@@ -1,0 +1,68 @@
+{
+  "name": "purus",
+  "version": "1.0.0",
+  "description": "Purus - /ˈpuː.rus/ means pure✨ in Latin - is a beautiful, simple, and easy-to-use language. It compiles to JavaScript. It makes your fingers free from the Shift key. With Purus, you can write code almost without pressing the Shift key.",
+  "main": "pkg/index.js",
+  "module": "pkg/index.mjs",
+  "types": "pkg/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./pkg/index.d.ts",
+      "import": "./pkg/index.mjs",
+      "require": "./pkg/index.js"
+    }
+  },
+  "bin": {
+    "purus": "bin/purus.js"
+  },
+  "files": [
+    "pkg/",
+    "bin/",
+    "LICENSE",
+    "README.md",
+    "README-ja.md"
+  ],
+  "scripts": {
+    "test": "moon test --target js",
+    "build:compiler": "moon build --target js",
+    "build:copy": "node scripts/build.js",
+    "build": "npm run build:compiler && npm run build:copy",
+    "lint": "moon check",
+    "lint:fix": "moon fmt",
+    "format": "moon fmt && prettier --write ./bin ./pkg ./scripts",
+    "format:check": "moon fmt --check && prettier --check ./bin ./pkg ./scripts",
+    "typecheck": "moon check",
+    "check": "npm run lint && npm run format:check && npm run build && npm run typecheck",
+    "sync": "node scripts/sync-version.js",
+    "prepublishOnly": "npm run sync && npm run build"
+  },
+  "keywords": [
+    "compiler",
+    "language",
+    "javascript",
+    "transpiler",
+    "altjs",
+    "lang",
+    "purus",
+    "noshift"
+  ],
+  "author": "otoneko. (https://github.com/otnc)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puruslang/purus"
+  },
+  "bugs": {
+    "url": "https://github.com/puruslang/purus/issues"
+  },
+  "funding": {
+    "url": "https://github.com/sponsors/otnc"
+  },
+  "homepage": "https://purus.work",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  }
+}

@@ -1,0 +1,31 @@
+-- Modules and Imports
+
+-- ES Module imports
+import [Hono] from //;hono;//
+import [describe; it; expect] from //;vitest;//
+import all as fs from //;fs;//
+
+-- from...import syntax
+from //;express;// import express
+from //;react;// import [useState, useEffect]
+from //;fs;// import all as fileSystem
+
+-- Import attributes
+import package from //;./package.json;// with [ type be //;json;// ]
+import [name; version] from //;./package.json;// with [ type be //;json;// ]
+
+-- Module namespace
+namespace utils
+  public fn helper to 42
+  public const VERSION be //;1.0;//
+
+-- Export
+public fn greet name to //;Hello, ;// add name
+public const MAX-SIZE be 100
+
+-- Default export
+export default fn main
+  console.log[//;running;//]
+
+-- CommonJS
+const path be require[//;path;//]

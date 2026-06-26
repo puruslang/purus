@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Update dependencies
+        run: moon update
+
+      - name: Check
+        run: moon check
+
+      - name: Test
+        run: moon test
+
+      - name: Build JS target
+        run: moon build --target js
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Copy build output
+        run: node scripts/build.js
+
+      - name: Verify API
+        run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"

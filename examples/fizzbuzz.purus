@@ -1,0 +1,11 @@
+-- FizzBuzz in Purus
+
+for let i be 1; i lt 101; i\add
+  if i mod 15 eq 0
+    console.log[//;FizzBuzz;//]
+  elif i mod 3 eq 0
+    console.log[//;Fizz;//]
+  elif i mod 5 eq 0
+    console.log[//;Buzz;//]
+  else
+    console.log[i]
