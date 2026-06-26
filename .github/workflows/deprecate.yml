@@ -1,0 +1,40 @@
+name: Deprecate old npm versions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Deprecate old purus versions
+        run: |
+          MSG="This version is no longer supported. Please upgrade to v1.x: https://www.npmjs.com/package/purus"
+          for v in 0.0.0-reserved 0.0.1 0.0.2 0.0.3 0.1.0 0.2.0 0.2.1 0.3.0 0.4.0 0.4.1 0.5.0 0.6.0 0.6.1 0.7.0 0.8.0 0.8.1 0.9.0 0.9.1 0.10.0 0.10.1; do
+            npm deprecate "purus@$v" "$MSG" && echo "Deprecated purus@$v" || echo "Skip purus@$v"
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deprecate old linter versions
+        run: |
+          MSG="This version is no longer supported. Please upgrade to v1.x: https://www.npmjs.com/package/@puruslang/linter"
+          for v in 0.0.1 0.0.2 0.0.3 0.1.0 0.2.0 0.2.1 0.3.0 0.3.1 0.4.0 0.5.0 0.6.0 0.7.0 0.7.1 0.8.0 0.8.1 0.9.0; do
+            npm deprecate "@puruslang/linter@$v" "$MSG" && echo "Deprecated @puruslang/linter@$v" || echo "Skip @puruslang/linter@$v"
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deprecate ALL old prettier-plugin versions
+        run: |
+          MSG="This version is no longer supported. Please upgrade to v1.x: https://www.npmjs.com/package/@puruslang/prettier-plugin-purus"
+          for v in 0.0.1 0.0.2 0.0.3 0.1.0 0.2.0 0.3.0 0.3.1 0.4.0 0.5.0 0.6.0 0.7.0 0.7.1 0.8.0 0.8.1 0.9.0 0.10.0; do
+            npm deprecate "@puruslang/prettier-plugin-purus@$v" "$MSG" && echo "Deprecated @puruslang/prettier-plugin-purus@$v" || echo "Skip"
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
