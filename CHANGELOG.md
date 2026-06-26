@@ -1,6 +1,6 @@
 # Changelog
 
-Change history for Purus syntax, specifications, and reserved keywords.
+Change history for @puruslang/linter.
 
 ---
 
