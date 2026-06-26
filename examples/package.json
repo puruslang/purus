@@ -9,6 +9,6 @@
   "license": "Apache-2.0",
   "description": "",
   "dependencies": {
-    "purus": "file:../core"
+    "purus": "file:.."
   }
 }
