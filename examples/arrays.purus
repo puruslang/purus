@@ -1,0 +1,51 @@
+-- Array Operations (p-array) in Purus
+
+use p-array as a
+
+-- Creation and type check
+const arr be a.of[1; 2; 3; 4; 5]
+const from-arr be a.from[[1, 2, 3]]
+const nums be a.range[1; 6]
+const stepped be a.range[0; 10; 2]
+const is-arr be a.isarray[arr]
+const not-arr be a.isarray[42]
+
+-- Access
+const length be a.len[arr]
+const head be a.first[arr]
+const tail be a.last[arr]
+
+-- Transform
+const nested be [[1, 2], [3, [4, 5]]]
+const flat be a.flatten[nested]
+const deep be a.flatten[nested; 2]
+const deduped be a.unique[[1, 2, 2, 3, 3, 3]]
+const paired be a.zip[[//;a;//, //;b;//, //;c;//]; [1, 2, 3]]
+const [ks; vs] be a.unzip[paired]
+const chunks be a.chunk[[1, 2, 3, 4, 5, 6, 7]; 3]
+const clean be a.compact[[0, 1, null, 2, undefined, 3, false]]
+
+-- Math
+const numbers be [10, 20, 30, 40, 50]
+const total be a.sum[numbers]
+const prod be a.product[[2, 3, 4]]
+const lowest be a.min[numbers]
+const highest be a.max[numbers]
+
+-- Sort
+const ascending be a.sortasc[[3, 1, 4, 1, 5, 9, 2]]
+const descending be a.sortdesc[[3, 1, 4, 1, 5, 9, 2]]
+
+-- Count and group
+const evens be a.count[[1, 2, 3, 4, 5, 6]; fn x to x mod 2 eq 0]
+const people be [[name be //;Alice;//, age be 25], [name be //;Bob;//, age be 30], [name be //;Carol;//, age be 25]]
+const by-age be a.groupby[people; fn p to p.age]
+
+-- Output
+console.log[//;Length: [length], First: [head], Last: [tail];//]
+console.log[//;Sum: [total], Min: [lowest], Max: [highest];//]
+console.log[//;Unique: [deduped];//]
+console.log[//;Asc: [ascending];//]
+console.log[//;Desc: [descending];//]
+console.log[//;Even count: [evens];//]
+console.log[//;Grouped: [by-age];//]
