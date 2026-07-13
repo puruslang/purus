@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const { CONFIG_PURUS, PRETTIERRC, MAIN_PURUS, GITIGNORE } = require("./templates.js");
+const pm = require("./pm.js");
 
 function run() {
   const cwd = process.cwd();
@@ -73,8 +74,9 @@ function run() {
       console.log("  package.json (skipped: scripts already set)");
     }
   } else {
+    const manager = pm.detect(cwd);
     console.log(
-      "\nNo package.json found. Run `npm init` then `purus init` again to add scripts.",
+      `\nNo package.json found. Run \`${manager} init\` then \`purus init\` again to add scripts.`,
     );
   }
 
