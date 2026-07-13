@@ -45,13 +45,34 @@ test "parser: var declaration with string" {
 }
 
 ///|
-test "parser: bare ident assignment is discarded" {
-  let stmts = parse("x be 10")
+test "parser: bare ident assignment is a parse error" {
+  let parser = Parser::new(tokenize("x be 10"))
+  let stmts = parser.parse()
   assert_eq(stmts.length(), 1)
   match stmts[0] {
     ExprStmt(Ident(name)) => assert_eq(name, "x")
     _ => fail("expected ExprStmt(Ident) - bare assignment is not supported")
   }
+  assert_eq(parser.errors.length(), 1)
+  assert_true(parser.errors[0].contains("bare identifier assignment"))
+  assert_true(parser.errors[0].contains("'x be ...'"))
+}
+
+///|
+test "parser: bare reassignment after let is a parse error" {
+  let parser = Parser::new(tokenize("let y be 10\ny be 20"))
+  let _stmts = parser.parse()
+  assert_eq(parser.errors.length(), 1)
+  assert_true(parser.errors[0].contains("'y be ...'"))
+}
+
+///|
+test "parser: property and compound assignments report no errors" {
+  let parser = Parser::new(
+    tokenize("obj.field be 10\narr[\\0] be 1\nlet z be 0\nz add be 1"),
+  )
+  let _stmts = parser.parse()
+  assert_eq(parser.errors.length(), 0)
 }
 
 ///|
