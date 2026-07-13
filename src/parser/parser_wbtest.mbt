@@ -489,3 +489,43 @@ test "parser: multiple statements" {
   let stmts = parse("const x be 1\nconst y be 2\nconst z be x add y")
   assert_eq(stmts.length(), 3)
 }
+
+///|
+test "parser: keyword as property name (then/catch/finally)" {
+  let stmts = parse("p.then[f]")
+  assert_eq(stmts.length(), 1)
+  match stmts[0] {
+    ExprStmt(MethodCall(Ident(obj), field, args)) => {
+      assert_eq(obj, "p")
+      assert_eq(field, "then")
+      assert_eq(args.length(), 1)
+    }
+    _ => fail("expected MethodCall with field 'then'")
+  }
+  match parse("p.catch[f]")[0] {
+    ExprStmt(MethodCall(_, field, _)) => assert_eq(field, "catch")
+    _ => fail("expected MethodCall with field 'catch'")
+  }
+  match parse("p.finally[f]")[0] {
+    ExprStmt(MethodCall(_, field, _)) => assert_eq(field, "finally")
+    _ => fail("expected MethodCall with field 'finally'")
+  }
+}
+
+///|
+test "parser: keyword as property access (dot / optional dot)" {
+  match parse("const t be obj.if")[0] {
+    VarDecl(Const_, _, DotAccess(Ident(o), field)) => {
+      assert_eq(o, "obj")
+      assert_eq(field, "if")
+    }
+    _ => fail("expected DotAccess with field 'if'")
+  }
+  match parse("const t be obj\\.then")[0] {
+    VarDecl(Const_, _, OptDotAccess(Ident(o), field)) => {
+      assert_eq(o, "obj")
+      assert_eq(field, "then")
+    }
+    _ => fail("expected OptDotAccess with field 'then'")
+  }
+}

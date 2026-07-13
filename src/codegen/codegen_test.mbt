@@ -1261,3 +1261,17 @@ test "codegen: semicolon string empty" {
   let js = compile("const s be //;;//")
   assert_eq(js, "const s = \"\";\n")
 }
+
+///|
+test "codegen: keyword property names (promise chain)" {
+  let js = compile("p.then[f].catch[g].finally[h]")
+  assert_eq(js, "p.then(f).catch(g).finally(h);\n")
+}
+
+///|
+test "codegen: keyword property access" {
+  let js = compile("const t be obj.default")
+  assert_eq(js, "const t = obj.default;\n")
+  let js2 = compile("const u be obj\\.then")
+  assert_eq(js2, "const u = obj?.then;\n")
+}
