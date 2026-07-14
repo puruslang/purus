@@ -1,6 +1,6 @@
 {
   "name": "purus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Purus - /ˈpuː.rus/ means pure✨ in Latin - is a beautiful, simple, and easy-to-use language. It compiles to JavaScript. It makes your fingers free from the Shift key. With Purus, you can write code almost without pressing the Shift key.",
   "main": "pkg/index.js",
   "module": "pkg/index.mjs",
