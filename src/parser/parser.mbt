@@ -4,11 +4,12 @@
 pub(all) struct Parser {
   tokens : Array[@lexer.Token]
   mut pos : Int
+  errors : Array[String]
 }
 
 ///|
 pub fn Parser::new(tokens : Array[@lexer.Token]) -> Parser {
-  { tokens, pos: 0 }
+  { tokens, pos: 0, errors: [] }
 }
 
 ///|
@@ -223,7 +224,20 @@ fn Parser::parse_stmt(self : Parser) -> Stmt? {
           // Bare identifier assignment (x be val) is not supported.
           // Use const/let/var for declarations. Property and index access assignments remain valid.
           match expr {
-            Ident(_) => Some(ExprStmt(expr)) // discard; bare variable assignment is removed
+            Ident(name) => {
+              self.errors.push(
+                "bare identifier assignment ('" +
+                name +
+                " be ...') is not supported. Declare with 'const " +
+                name +
+                " be ...' or 'let " +
+                name +
+                " be ...', or use compound assignment such as '" +
+                name +
+                " add be 1'",
+              )
+              Some(ExprStmt(expr))
+            }
             _ => Some(self.maybe_postfix(Assign(expr, value)))
           }
         }

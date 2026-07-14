@@ -69,7 +69,14 @@ fn cmd_build(args : Array[String]) -> Unit {
     filtered.push(tokens[fi])
     fi += 1
   }
-  let stmts = @parser.Parser::new(filtered).parse()
+  let parser = @parser.Parser::new(filtered)
+  let stmts = parser.parse()
+  if parser.errors.length() > 0 {
+    for msg in parser.errors {
+      println("Error: " + msg)
+    }
+    @sys.exit(1)
+  }
   let header = if no_header {
     ""
   } else {
@@ -140,7 +147,14 @@ fn cmd_check(file : String) -> Unit {
     }
   }
   let tokens = @lexer.Lexer::new(src).tokenize()
-  let _stmts = @parser.Parser::new(tokens).parse()
+  let parser = @parser.Parser::new(tokens)
+  let _stmts = parser.parse()
+  if parser.errors.length() > 0 {
+    for msg in parser.errors {
+      println("Error: " + msg)
+    }
+    @sys.exit(1)
+  }
   println("OK: " + file)
 }
 

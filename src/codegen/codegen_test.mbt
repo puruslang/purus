@@ -266,8 +266,11 @@ test "codegen: hyphenated ident becomes underscore" {
 
 ///|
 test "codegen: bare ident assignment is discarded" {
+  // Bare identifier assignment is a parse error (reported via Parser::errors
+  // and rejected by the CLI). The recovery AST still emits the identifier as
+  // an expression so codegen never sees the dropped assignment.
   let js = compile("x be 42")
-  assert_eq(js, "x;\n") // bare ident assignment is not supported; emits identifier as expression
+  assert_eq(js, "x;\n")
 }
 
 ///|
