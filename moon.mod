@@ -1,6 +1,6 @@
 name = "puruslang/purus"
 
-version = "1.0.0"
+version = "1.1.0"
 
 import {
   "moonbitlang/x@0.4.40",
