@@ -5,6 +5,7 @@ const path = require("path");
 const readline = require("readline");
 const { spawnSync } = require("child_process");
 const { CONFIG_PURUS, PRETTIERRC, MAIN_PURUS, GITIGNORE } = require("./templates.js");
+const pm = require("./pm.js");
 
 function question(rl, text) {
   return new Promise((resolve) => rl.question(text, (a) => resolve(a.trim())));
@@ -56,6 +57,10 @@ async function run() {
     // src/main.purus
     fs.writeFileSync(path.join(projectDir, "src/main.purus"), MAIN_PURUS);
 
+    // Detect the package manager from how we were launched (npx /
+    // pnpm dlx / yarn dlx / bunx), falling back to npm.
+    const manager = pm.detect(projectDir);
+
     // README.md
     const readme = `# ${projectName}
 
@@ -64,7 +69,7 @@ A [Purus](https://purus.work) project.
 ## Getting Started
 
 \`\`\`sh
-npm install
+${pm.installHint(manager)}
 purus build
 \`\`\`
 
@@ -72,10 +77,10 @@ purus build
 
 | Script | Description |
 |---|---|
-| \`npm run build\` | Compile Purus to JavaScript |
-| \`npm run exec\` | Run without compiling to files |
-| \`npm run format\` | Format with Prettier |
-| \`npm run lint\` | Lint with purus-lint |
+| \`${manager} run build\` | Compile Purus to JavaScript |
+| \`${manager} run exec\` | Run without compiling to files |
+| \`${manager} run format\` | Format with Prettier |
+| \`${manager} run lint\` | Lint with purus-lint |
 `;
     fs.writeFileSync(path.join(projectDir, "README.md"), readme);
 
@@ -88,22 +93,28 @@ purus build
     console.log("  README.md");
     console.log("  src/main.purus");
 
-    // npm init
+    // Initialize package.json with the detected package manager
     console.log("");
-    if (yesFlag) {
-      console.log("Running npm init -y...");
-      spawnSync("npm", ["init", "-y"], {
+    const initCmd = pm.initCommand(manager, yesFlag);
+    if (initCmd) {
+      console.log(`Running ${initCmd.cmd} ${initCmd.args.join(" ")}...`);
+      spawnSync(initCmd.cmd, initCmd.args, {
         cwd: projectDir,
         stdio: "inherit",
         shell: true,
       });
     } else {
-      console.log("Running npm init...");
-      spawnSync("npm", ["init"], {
-        cwd: projectDir,
-        stdio: "inherit",
-        shell: true,
-      });
+      // Managers whose init scaffolds extra files (e.g. bun) get a
+      // minimal package.json instead.
+      console.log("Creating package.json...");
+      fs.writeFileSync(
+        path.join(projectDir, "package.json"),
+        JSON.stringify(
+          { name: path.basename(projectDir), version: "1.0.0" },
+          null,
+          2,
+        ) + "\n",
+      );
     }
 
     // Add scripts to package.json and set main/type
@@ -144,12 +155,13 @@ purus build
         "prettier",
         "purus",
       ];
-      console.log("\nInstalling devDependencies...");
+      console.log(`\nInstalling devDependencies with ${manager}...`);
       for (const dep of devDeps) {
         console.log(`  ${dep}`);
       }
       console.log("");
-      spawnSync("npm", ["install", "--save-dev", ...devDeps], {
+      const addCmd = pm.addDevCommand(manager, devDeps);
+      spawnSync(addCmd.cmd, addCmd.args, {
         cwd: projectDir,
         stdio: "inherit",
         shell: true,
@@ -159,7 +171,7 @@ purus build
     console.log("\nDone! To get started:");
     console.log(`  cd ${projectName}`);
     if (!installDeps) {
-      console.log("  npm install");
+      console.log(`  ${pm.installHint(manager)}`);
     }
     console.log("  purus build");
   } finally {
