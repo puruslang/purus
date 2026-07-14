@@ -1,8 +1,0 @@
-{
-  "import": [
-    { "path": "puruslang/purus/src/parser", "alias": "parser" }
-  ],
-  "test-import": [
-    { "path": "puruslang/purus/src/lexer", "alias": "lexer" }
-  ]
-}

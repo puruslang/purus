@@ -1,0 +1,153 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "puruslang/purus/src/lexer"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct Lexer {
+  chars : Array[Char]
+  mut pos : Int
+  mut line : Int
+  mut col : Int
+  mut tokens : Array[Token]
+}
+pub fn Lexer::new(String) -> Self
+pub fn Lexer::tokenize(Self) -> Array[Token]
+
+pub(all) struct Token {
+  kind : TokenKind
+  line : Int
+  col : Int
+} derive(@debug.Debug)
+pub impl Show for Token
+
+pub(all) enum TokenKind {
+  Int(Int)
+  BigInt(String)
+  Float(Double)
+  Str(String)
+  Regex(String, String)
+  True_
+  False_
+  Ident(String)
+  Const_
+  Let_
+  Var_
+  Be
+  Add
+  Sub
+  Mul
+  Div
+  Fdiv
+  Mod
+  Neg
+  Pow
+  Eq
+  Neq
+  Lt
+  Gt
+  Le
+  Ge
+  And
+  Or
+  Not
+  Coal
+  Band
+  Bor
+  Bxor
+  Bnot
+  Shl
+  Shr
+  Ushr
+  Fn
+  Return_
+  To
+  If_
+  Elif
+  Else_
+  Unless
+  Then_
+  While_
+  Until
+  Do_
+  Yield_
+  For_
+  In_
+  Range_
+  Break_
+  Continue_
+  Match_
+  When_
+  Switch_
+  Case_
+  Pipe_
+  As
+  Of
+  Gives
+  Typeof_
+  Void_
+  Instanceof_
+  New_
+  Delete_
+  This_
+  Async_
+  Await_
+  Try_
+  Catch_
+  Finally_
+  Throw_
+  Import_
+  From_
+  Export_
+  Default_
+  Require_
+  Use_
+  Mod_
+  Public_
+  All_
+  Type_
+  With_
+  Class_
+  Extends_
+  Super_
+  Static_
+  Private_
+  Get_
+  Set_
+  Null_
+  Nil_
+  Undefined_
+  Nan_
+  Infinity_
+  List_
+  Object_
+  LBracket
+  RBracket
+  Comma
+  Semicolon
+  Dot
+  DotDot
+  DotDotDot
+  Backslash
+  OptDot
+  Newline
+  Indent(Int)
+  InterpStr(Array[String])
+  Blank
+  Shebang(String)
+  Comment(String)
+  BlockComment(String)
+  Eof
+} derive(Eq, @debug.Debug)
+pub impl Show for TokenKind
+
+// Type aliases
+
+// Traits
+

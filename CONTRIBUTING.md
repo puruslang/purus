@@ -15,7 +15,7 @@ puruslang/purus
 ├── bin/          # CLI entry point
 ├── scripts/      # Build & sync scripts
 ├── examples/     # Sample .purus files
-├── moon.mod.json # MoonBit module definition
+├── moon.mod # MoonBit module definition
 └── package.json
 ```
 
@@ -42,7 +42,7 @@ node scripts/build.js
 | `moon test` | Run all tests |
 | `moon check` | Type check |
 | `npm run build` | Full build (compile + copy) |
-| `npm run sync` | Sync version to moon.mod.json |
+| `npm run sync` | Sync version to moon.mod |
 
 ## Submitting Pull Requests
 

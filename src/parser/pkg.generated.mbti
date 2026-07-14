@@ -1,0 +1,204 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "puruslang/purus/src/parser"
+
+import {
+  "moonbitlang/core/debug",
+  "puruslang/purus/src/lexer",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum BinOp {
+  Add
+  Sub
+  Mul
+  Div
+  Mod
+  Pow
+  Eq
+  Neq
+  Lt
+  Gt
+  Le
+  Ge
+  And
+  Or
+  Coal
+  Band
+  Bor
+  Bxor
+  Shl
+  Shr
+  Ushr
+  Fdiv
+} derive(@debug.Debug)
+
+pub(all) struct ClassDecl {
+  name : String
+  parent : String?
+  members : Array[ClassMember]
+}
+
+pub(all) enum ClassMember {
+  Field(Bool, String, Expr?)
+  Constructor(Array[String], FnBody)
+  Method(Bool, Bool, String, Array[String], FnBody)
+  Getter(String, FnBody)
+  Setter(String, String, FnBody)
+}
+
+pub(all) enum DeclKind {
+  Const_
+  Let_
+  Var_
+}
+
+pub(all) struct ElIfBranch {
+  cond : Expr
+  body : Array[Stmt]
+}
+
+pub(all) enum Expr {
+  IntLit(Int)
+  BigIntLit(String)
+  FloatLit(Double)
+  StrLit(String)
+  StrInterp(Array[StrPart])
+  RegexLit(String, String)
+  BoolLit(Bool)
+  NullLit
+  UndefinedLit
+  NanLit
+  InfinityLit(Bool)
+  ArrayLit(Array[Expr])
+  RangeArray(Expr, Expr, Bool)
+  Slice(Expr, Expr, Expr, Bool)
+  ObjectLit(Array[(String, Expr)])
+  Ident(String)
+  DotAccess(Expr, String)
+  IndexAccess(Expr, Int)
+  BinOp(BinOp, Expr, Expr)
+  UnaryNeg(Expr)
+  UnaryNot(Expr)
+  UnaryBnot(Expr)
+  UnaryTypeof(Expr)
+  UnaryVoid(Expr)
+  AsCast(Expr, String)
+  Instanceof(Expr, Expr)
+  FnExpr(Array[String], Array[Stmt])
+  FnExprTo(Array[String], Expr)
+  Call(Expr, Array[Expr])
+  MethodCall(Expr, String, Array[Expr])
+  NewExpr(Expr, Array[Expr])
+  Pipe(Expr, Expr)
+  IfExpr(Expr, Expr, Expr)
+  TryExpr(Array[Stmt], String, Array[Stmt])
+  MatchExpr(Expr, Array[MatchArm])
+  AwaitExpr(Expr)
+  DeleteExpr(Expr)
+  ThisExpr
+  SuperExpr
+  OptDotAccess(Expr, String)
+  OptMethodCall(Expr, String, Array[Expr])
+  ComputedAccess(Expr, Expr)
+  AsyncFnExpr(Array[String], Array[Stmt])
+  AsyncFnExprTo(Array[String], Expr)
+  YieldExpr(Expr?)
+  PostInc(Expr)
+  PostDec(Expr)
+  PreInc(Expr)
+  PreDec(Expr)
+}
+
+pub(all) enum FnBody {
+  Block(Array[Stmt])
+  ToExpr(Expr)
+  ToReturnExpr(Expr)
+}
+
+pub(all) struct FnDecl {
+  name : String?
+  params : Array[String]
+  body : FnBody
+  is_async : Bool
+  is_generator : Bool
+}
+
+pub(all) enum ImportDecl {
+  EsImport(String?, Array[String]?, String?, String, Array[(String, Expr)]?)
+  CjsRequire(String, String)
+  DynImport(String)
+  SideEffectImport(String, Array[(String, Expr)]?)
+}
+
+pub(all) struct MatchArm {
+  pattern : MatchPattern
+  cond : Expr?
+  body : MatchBody
+}
+
+pub(all) enum MatchBody {
+  ExprBody(Expr)
+  BlockBody(Array[Stmt])
+}
+
+pub(all) enum MatchPattern {
+  LitPat(Expr)
+  BindPat(String)
+}
+
+pub(all) struct Parser {
+  tokens : Array[@lexer.Token]
+  mut pos : Int
+}
+pub fn Parser::new(Array[@lexer.Token]) -> Self
+pub fn Parser::parse(Self) -> Array[Stmt]
+
+pub(all) enum Stmt {
+  VarDecl(DeclKind, String, Expr)
+  DestructDecl(DeclKind, Array[String], Expr)
+  ObjDestructDecl(DeclKind, Array[String], Expr)
+  DottedVarInit(DeclKind, String, String, Expr)
+  Assign(Expr, Expr)
+  CompoundAssign(BinOp, Expr, Expr)
+  FnDecl(FnDecl)
+  If(Expr, Array[Stmt], Array[ElIfBranch], Array[Stmt]?)
+  Unless(Expr, Array[Stmt])
+  While(Expr, Array[Stmt])
+  Until(Expr, Array[Stmt])
+  DoWhile(Expr, Array[Stmt])
+  ForIn(String, String?, Expr, Array[Stmt])
+  ForRange(String, Expr, Expr, Array[Stmt])
+  ForClassic(Stmt, Expr, Stmt, Array[Stmt])
+  MatchStmt(Expr, Array[MatchArm])
+  PostfixIf(Stmt, Expr)
+  PostfixUnless(Stmt, Expr)
+  PostfixFor(Stmt, String, Expr)
+  TryCatch(Array[Stmt], String?, Array[Stmt], Array[Stmt]?)
+  Throw(Expr)
+  Return(Expr?)
+  Break
+  Continue
+  ExprStmt(Expr)
+  ImportDecl(ImportDecl)
+  UseStdlib(String, String)
+  ModDecl(String, Array[Stmt])
+  ExportDefault(Stmt)
+  PublicDecl(Stmt)
+  TypeDecl(String, Expr)
+  ClassDecl(ClassDecl)
+  DeleteStmt(Expr)
+}
+
+pub(all) enum StrPart {
+  Lit(String)
+  Interp(Expr)
+}
+
+// Type aliases
+
+// Traits
+

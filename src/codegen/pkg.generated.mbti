@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "puruslang/purus/src/codegen"
+
+import {
+  "puruslang/purus/src/parser",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct JsCodegen {
+  buf : StringBuilder
+  mut indent_level : Int
+  mut private_fields : Array[String]
+  mut declared_vars : Array[String]
+  cjs : Bool
+}
+pub fn JsCodegen::generate(Self, Array[@parser.Stmt], header? : String, shebang? : String, strict? : Bool) -> String
+pub fn JsCodegen::new(cjs? : Bool) -> Self
+
+// Type aliases
+
+// Traits
+

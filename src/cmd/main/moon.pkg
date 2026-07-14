@@ -1,9 +1,9 @@
 import {
-  "puruslang/purus/src/lexer" @lexer,
-  "puruslang/purus/src/parser" @parser,
-  "puruslang/purus/src/codegen" @codegen,
-  "moonbitlang/x/sys" @sys,
-  "moonbitlang/x/fs" @fs,
+  "puruslang/purus/src/lexer",
+  "puruslang/purus/src/parser",
+  "puruslang/purus/src/codegen",
+  "moonbitlang/x/sys",
+  "moonbitlang/x/fs",
 }
 
 options(
