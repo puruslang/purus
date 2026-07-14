@@ -1,0 +1,7 @@
+import {
+  "puruslang/purus/src/parser",
+}
+
+import {
+  "puruslang/purus/src/lexer",
+} for "test"

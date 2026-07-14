@@ -15,7 +15,7 @@ puruslang/purus
 ├── bin/          # CLI エントリポイント
 ├── scripts/      # ビルド・同期スクリプト
 ├── examples/     # サンプル .purus ファイル
-├── moon.mod.json # MoonBit モジュール定義
+├── moon.mod # MoonBit モジュール定義
 └── package.json
 ```
 
@@ -42,7 +42,7 @@ node scripts/build.js
 | `moon test` | 全テストの実行 |
 | `moon check` | 型チェック |
 | `npm run build` | フルビルド（コンパイル + コピー）|
-| `npm run sync` | バージョンを moon.mod.json に同期 |
+| `npm run sync` | バージョンを moon.mod に同期 |
 
 ## プルリクエストの提出
 

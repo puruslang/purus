@@ -1,0 +1,17 @@
+name = "puruslang/purus"
+
+version = "1.0.0"
+
+import {
+  "moonbitlang/x@0.4.40",
+}
+
+readme = "README.md"
+
+repository = "https://github.com/puruslang/purus"
+
+license = "Apache-2.0"
+
+keywords = [ "purus", "compiler", "altjs", "javascript" ]
+
+description = "A language that compiles to JavaScript — no Shift key required"
