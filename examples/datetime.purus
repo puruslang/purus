@@ -1,0 +1,77 @@
+use p-datetime as dt
+
+-- Current time
+const now be dt.now[]
+const today be dt.today[]
+const unix be dt.timestamp[]
+
+console.log[//;Current time (ms): [now];//]
+console.log[//;Today start (ms): [today];//]
+console.log[//;Unix timestamp (s): [unix];//]
+
+-- Date creation
+const newyear be dt.create[2026; 1; 1]
+const meeting be dt.utccreate[2026; 7; 14; 9; 30; 0]
+const parsed be dt.fromiso[//;2026-04-02T00:00:00Z;//]
+
+const iso be dt.toiso[newyear]
+console.log[//;New Year: [iso];//]
+
+-- Component extraction (local)
+const year be dt.year[now]
+const month be dt.month[now]
+const day be dt.day[now]
+const weekday be dt.weekday[now]
+const hour be dt.hour[now]
+const minute be dt.minute[now]
+const second be dt.second[now]
+
+console.log[//;Today: [year]-[month]-[day];//]
+console.log[//;Time: [hour]:[minute]:[second];//]
+console.log[//;Weekday: [weekday];//]
+
+-- Component extraction (UTC)
+const utc-year be dt.utcyear[now]
+const utc-month be dt.utcmonth[now]
+const utc-day be dt.utcday[now]
+
+console.log[//;UTC: [utc-year]-[utc-month]-[utc-day];//]
+
+-- Formatting
+const locale-date be dt.todate[now; //;en-US;//]
+const locale-time be dt.totime[now; //;ja-JP;//]
+const locale-full be dt.tolocale[now; //;en-GB;//]
+
+console.log[locale-date]
+console.log[locale-time]
+console.log[locale-full]
+
+-- Arithmetic
+const tomorrow be dt.adddays[now; 1]
+const last-week be dt.adddays[now; neg 7]
+const in-3h be dt.addhours[now; 3]
+const ago-30m be dt.addminutes[now; neg 30]
+
+const tomorrow-iso be dt.toiso[tomorrow]
+console.log[//;Tomorrow: [tomorrow-iso];//]
+
+-- Diff
+const days-until-newyear be dt.diffdays[newyear; now]
+const hours-diff be dt.diffhours[meeting; now]
+const ms-diff be dt.diff[now; today]
+
+console.log[//;Days since New Year: [days-until-newyear];//]
+console.log[//;Hours to meeting: [hours-diff];//]
+
+-- Timezone
+const offset be dt.offset[]
+const local-tz be dt.localtz[]
+
+console.log[//;Local offset (min): [offset];//]
+console.log[//;Local timezone: [local-tz];//]
+
+const tokyo-hour be dt.tzhour[now; //;Asia/Tokyo;//]
+const london-hour be dt.tzhour[now; //;Europe/London;//]
+
+console.log[//;Tokyo hour: [tokyo-hour];//]
+console.log[//;London hour: [london-hour];//]
