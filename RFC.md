@@ -1,6 +1,6 @@
 # Purus Language Specification
 
-**RFC — v1.0.0**
+**RFC — v1.1.0**
 
 > Purus — _/ˈpuː.rus/_ — means _pure_ in Latin.
 > A beautiful, simple, and easy-to-use language that compiles to JavaScript.
