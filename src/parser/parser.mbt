@@ -305,6 +305,124 @@ fn Parser::parse_ident_name(self : Parser) -> String {
 }
 
 ///|
+/// Map a keyword token back to its source text. Returns None for
+/// non-keyword tokens (identifiers, literals, punctuation).
+fn keyword_text(tok : @lexer.TokenKind) -> String? {
+  match tok {
+    Const_ => Some("const")
+    Let_ => Some("let")
+    Var_ => Some("var")
+    Be => Some("be")
+    Add => Some("add")
+    Sub => Some("sub")
+    Mul => Some("mul")
+    Div => Some("div")
+    Fdiv => Some("fdiv")
+    Mod => Some("mod")
+    Neg => Some("neg")
+    Pow => Some("pow")
+    Eq => Some("eq")
+    Neq => Some("neq")
+    Lt => Some("lt")
+    Gt => Some("gt")
+    Le => Some("le")
+    Ge => Some("ge")
+    And => Some("and")
+    Or => Some("or")
+    Not => Some("not")
+    Coal => Some("coal")
+    Band => Some("band")
+    Bor => Some("bor")
+    Bxor => Some("bxor")
+    Bnot => Some("bnot")
+    Shl => Some("shl")
+    Shr => Some("shr")
+    Ushr => Some("ushr")
+    Fn => Some("fn")
+    Return_ => Some("return")
+    To => Some("to")
+    If_ => Some("if")
+    Elif => Some("elif")
+    Else_ => Some("else")
+    Unless => Some("unless")
+    Then_ => Some("then")
+    While_ => Some("while")
+    Until => Some("until")
+    Do_ => Some("do")
+    Yield_ => Some("yield")
+    For_ => Some("for")
+    In_ => Some("in")
+    Range_ => Some("range")
+    Break_ => Some("break")
+    Continue_ => Some("continue")
+    Match_ => Some("match")
+    When_ => Some("when")
+    Switch_ => Some("switch")
+    Case_ => Some("case")
+    Pipe_ => Some("pipe")
+    As => Some("as")
+    Of => Some("of")
+    Gives => Some("gives")
+    Typeof_ => Some("typeof")
+    Void_ => Some("void")
+    Instanceof_ => Some("instanceof")
+    New_ => Some("new")
+    Delete_ => Some("delete")
+    This_ => Some("this")
+    Async_ => Some("async")
+    Await_ => Some("await")
+    Try_ => Some("try")
+    Catch_ => Some("catch")
+    Finally_ => Some("finally")
+    Throw_ => Some("throw")
+    Import_ => Some("import")
+    From_ => Some("from")
+    Export_ => Some("export")
+    Default_ => Some("default")
+    Require_ => Some("require")
+    Use_ => Some("use")
+    Mod_ => Some("namespace")
+    Public_ => Some("public")
+    All_ => Some("all")
+    Type_ => Some("type")
+    With_ => Some("with")
+    True_ => Some("true")
+    False_ => Some("false")
+    Null_ => Some("null")
+    Nil_ => Some("nil")
+    Undefined_ => Some("undefined")
+    Nan_ => Some("nan")
+    Infinity_ => Some("infinity")
+    List_ => Some("list")
+    Object_ => Some("object")
+    Class_ => Some("class")
+    Extends_ => Some("extends")
+    Super_ => Some("super")
+    Static_ => Some("static")
+    Private_ => Some("private")
+    Get_ => Some("get")
+    Set_ => Some("set")
+    Blank => Some("blank")
+    _ => None
+  }
+}
+
+///|
+/// Parse a name in property position (after `.` or `\.`).
+/// Any keyword is a valid property name there, matching JavaScript,
+/// which allows reserved words after `.` (e.g. `promise.then`,
+/// `promise.catch`, `promise.finally`).
+fn Parser::parse_property_name(self : Parser) -> String {
+  match keyword_text(self.peek()) {
+    Some(name) => {
+      self.pos += 1
+      name
+    }
+    None => self.parse_ident_name()
+  }
+}
+
+///|
 fn Parser::parse_var_decl(self : Parser, kind : DeclKind) -> Stmt {
   self.pos += 1 // skip const/let/var
   // Check for object destructuring: const/let/var object[a; b] be expr

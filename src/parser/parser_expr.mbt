@@ -395,7 +395,7 @@ fn Parser::parse_postfix(self : Parser) -> Expr {
     match self.peek() {
       Dot => {
         self.pos += 1
-        let field = self.parse_ident_name()
+        let field = self.parse_property_name()
         if self.peek() == LBracket {
           if self.is_computed_bracket() {
             // Computed access on property: obj.field[\expr]
@@ -443,7 +443,7 @@ fn Parser::parse_postfix(self : Parser) -> Expr {
       }
       OptDot => {
         self.pos += 1
-        let field = self.parse_ident_name()
+        let field = self.parse_property_name()
         if self.peek() == LBracket {
           if self.is_computed_bracket() {
             self.pos += 1 // skip [
