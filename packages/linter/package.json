@@ -8,7 +8,7 @@
     "purus-lint": "src/cli.js"
   },
   "scripts": {
-    "test": "npx vitest run"
+    "test": "vitest run"
   },
   "keywords": [
     "linter",
@@ -23,10 +23,11 @@
   "homepage": "https://purus.work",
   "repository": {
     "type": "git",
-    "url": "https://github.com/puruslang/linter"
+    "url": "git+https://github.com/puruslang/purus.git",
+    "directory": "packages/linter"
   },
   "bugs": {
-    "url": "https://github.com/puruslang/linter/issues"
+    "url": "https://github.com/puruslang/purus/issues"
   },
   "funding": {
     "url": "https://github.com/sponsors/otnc"

@@ -14,6 +14,7 @@ puruslang/purus
 ├── pkg/          # Published npm package output
 ├── bin/          # CLI entry point
 ├── scripts/      # Build & sync scripts
+├── packages/     # Tooling workspaces (linter, ...), see docs/adr/0001-monorepo.md
 ├── examples/     # Sample .purus files
 ├── moon.mod # MoonBit module definition
 └── package.json
