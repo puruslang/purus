@@ -34,6 +34,10 @@ Before finishing a change, run `moon info && moon fmt`, then `moon check` and `m
 - A language change needs all of: the compiler change with tests, an update to [RFC.md](RFC.md), and a note for the other repositories (linter, prettier plugin, editor grammar, docs).
 - When unsure about a design decision that belongs to the maintainer, ask instead of guessing.
 
+## Skills
+
+Project skills live in `.agents/skills/`: `purus-compiler-dev` (how to change the compiler), `purus-language` (how to write Purus), `release` (how to cut a release), and the prose and comment style skills (`hush*`, `fix-unnatural-line-breaks`). Issue handling is described in [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md).
+
 ## Do not
 
 - Edit generated files by hand: `pkg.generated.mbti`, `pkg/lib/purus-compiler.js`, `_build/`.

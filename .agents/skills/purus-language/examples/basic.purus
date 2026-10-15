@@ -1,0 +1,21 @@
+-- Example used by the purus-language skill (must compile in CI)
+use p-array as a
+use p-string as s
+
+class Counter
+  private count be 0
+
+  fn increment
+    this.count be this.count add 1
+
+  get fn value to return this.count
+
+fn describe n of Number gives String
+  return if n mod 2 eq 0 then //;even;// else //;odd;//
+
+const nums be a.range[1; 6]
+const total be a.sum[nums]
+const counter be new Counter[]
+counter.increment[]
+console.log[//;total: [total], parity: [describe[total]], count: [counter.value];//]
+console.log[s.upper[//;done;//]]
