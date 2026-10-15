@@ -3,7 +3,7 @@ name = "puruslang/purus"
 version = "1.1.0"
 
 import {
-  "moonbitlang/x@0.4.40",
+  "moonbitlang/x@0.5.5",
 }
 
 readme = "README.md"
