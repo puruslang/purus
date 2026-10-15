@@ -4,7 +4,7 @@ One-time setup for `.github/workflows/release.yml` (tracked in #13 and #14).
 
 ## npm Trusted Publisher
 
-On npmjs.com: package `purus` -> Settings -> Trusted Publisher -> GitHub Actions. Organization `puruslang`, repository `purus`, workflow `release.yml`, environment `release`. No `NPM_TOKEN` is needed afterwards; remove the old secret.
+On npmjs.com, for every released package (`purus`, `@puruslang/linter`, `@puruslang/prettier-plugin-purus`, and the language server and MCP packages once published): package -> Settings -> Trusted Publisher -> GitHub Actions. Organization `puruslang`, repository `purus`, workflow `release.yml`, environment `release`. No `NPM_TOKEN` is needed afterwards; remove the old secret.
 
 ## GitHub App `purus-release`
 
@@ -15,4 +15,4 @@ On npmjs.com: package `purus` -> Settings -> Trusted Publisher -> GitHub Actions
 
 ## Verify
 
-Run the workflow with `version=1.2.0-beta.0`; the push dry run step proves that the bot can push to the protected `main` before anything is published.
+Run the workflow with `package=purus` and `version=1.2.0-beta.0`; the push dry run step proves that the bot can push to the protected `main` before anything is published.

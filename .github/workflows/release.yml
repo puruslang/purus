@@ -1,20 +1,31 @@
 name: Release
 
-# Manually triggered release: bump the version, publish to npm with Trusted
-# Publishing (OIDC, no NPM_TOKEN), then commit, tag and create a GitHub Release.
+# Manually triggered release of one package: bump its version, publish it to npm with
+# Trusted Publishing (OIDC, no NPM_TOKEN), then commit, tag and create a GitHub Release.
+# Every package has its own version and its own tag prefix (see docs/adr/0001-monorepo.md):
+#   purus                 -> v1.2.0
+#   linter                -> linter-v1.2.0   (and so on for the other packages)
 #
-# Requirements (see #13 and #14):
-#   - npm: Trusted Publisher configured for this package and this workflow
-#     (package Settings -> Trusted publishers -> GitHub, workflow "release.yml").
-#   - GitHub: the "purus-release" GitHub App installed on this repository, its
-#     credentials stored as RELEASE_APP_ID (variable) and RELEASE_APP_PRIVATE_KEY
-#     (secret) in the "release" environment, and the app set as the only bypass
-#     actor of the main branch ruleset and the v* tag ruleset.
+# Requirements (see #13 and #14, docs/release.md):
+#   - npm: a Trusted Publisher for each package, pointing at this workflow and the "release" environment.
+#   - GitHub: the "purus-release" GitHub App, RELEASE_APP_ID (variable) and RELEASE_APP_PRIVATE_KEY
+#     (secret) in the "release" environment, and the app as bypass actor of the rulesets.
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: "Package to release"
+        type: choice
+        required: true
+        default: purus
+        options:
+          - purus
+          - linter
+          - prettier-plugin
+          - language-server
+          - mcp
       version:
-        description: "Version to release: a semver bump (patch/minor/major/prerelease) or an explicit version (e.g. 1.2.0)"
+        description: "Version to release: a semver bump (patch/minor/major/prerelease) or an explicit version (e.g. 1.2.0 or 1.2.0-beta.0)"
         required: true
         default: patch
       dist_tag:
@@ -39,7 +50,7 @@ jobs:
       id-token: write # npm Trusted Publishing (OIDC)
     steps:
       # Short-lived token of the release bot. It is the only identity allowed to
-      # push to the protected main branch and to create v* tags.
+      # push to the protected main branch and to create release tags.
       - id: app-token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
@@ -58,27 +69,73 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: npm
 
-      - name: Install MoonBit
+      # Trusted Publishing needs npm >= 11 (also fixes workspace resolution).
+      - run: npm install -g npm@11
+
+      - name: Resolve package
+        id: pkg
+        env:
+          PACKAGE: ${{ inputs.package }}
+        run: |
+          case "$PACKAGE" in
+            purus)
+              DIR="."; TAG_PREFIX="v" ;;
+            linter | prettier-plugin | language-server | mcp)
+              DIR="packages/$PACKAGE"; TAG_PREFIX="$PACKAGE-v" ;;
+            *)
+              echo "::error::Unknown package: $PACKAGE"; exit 1 ;;
+          esac
+          if [ ! -f "$DIR/package.json" ]; then
+            echo "::error::$DIR/package.json does not exist on this branch (package not migrated yet?)"
+            exit 1
+          fi
+          NAME="$(node -p "require('./$DIR/package.json').name")"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "tag_prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"
+
+      - run: npm ci
+
+      - name: Install MoonBit (compiler only)
+        if: inputs.package == 'purus'
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
-      - run: npm ci
-      - run: moon update
-      - run: moon check
-      - run: moon test
+      - name: Check and test (compiler)
+        if: inputs.package == 'purus'
+        run: |
+          moon update
+          moon check
+          moon test
+
+      - name: Test and build (workspace package)
+        if: inputs.package != 'purus'
+        env:
+          NAME: ${{ steps.pkg.outputs.name }}
+        run: |
+          npm test -w "$NAME" --if-present
+          npm run build -w "$NAME" --if-present
 
       - name: Bump version
         id: bump
         env:
           VERSION_INPUT: ${{ inputs.version }}
           DIST_TAG_INPUT: ${{ inputs.dist_tag }}
+          DIR: ${{ steps.pkg.outputs.dir }}
+          NAME: ${{ steps.pkg.outputs.name }}
+          TAG_PREFIX: ${{ steps.pkg.outputs.tag_prefix }}
         run: |
-          OLD="$(node -p "require('./package.json').version")"
-          npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
-          node scripts/sync-version.js
-          NEW="$(node -p "require('./package.json').version")"
-          echo "version=v${NEW}" >> "$GITHUB_OUTPUT"
+          OLD="$(node -p "require('./$DIR/package.json').version")"
+          if [ "$DIR" = "." ]; then
+            npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
+            node scripts/sync-version.js
+          else
+            npm version "$VERSION_INPUT" -w "$NAME" --no-git-tag-version --allow-same-version >/dev/null
+          fi
+          NEW="$(node -p "require('./$DIR/package.json').version")"
+          echo "version=${NEW}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG_PREFIX}${NEW}" >> "$GITHUB_OUTPUT"
           if [ "$OLD" = "$NEW" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Version is already ${NEW}; skipping the bump commit but still releasing."
@@ -98,44 +155,68 @@ jobs:
           fi
           echo "npm_tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "prerelease=$([ "$TAG" = "latest" ] && echo false || echo true)" >> "$GITHUB_OUTPUT"
+          PREV="$(git tag --list "${TAG_PREFIX}[0-9]*" --sort=-v:refname | head -n 1)"
+          echo "previous_tag=$PREV" >> "$GITHUB_OUTPUT"
 
-      - name: Build
+      - name: Build (compiler)
+        if: inputs.package == 'purus'
         run: npm run build
 
-      - name: Verify package
+      - name: Verify package (compiler)
+        if: inputs.package == 'purus'
         run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
 
       - name: Commit and tag (local)
         env:
           APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          DIR: ${{ steps.pkg.outputs.dir }}
+          TAG: ${{ steps.bump.outputs.tag }}
+          CHANGED: ${{ steps.bump.outputs.changed }}
+          VERSION: ${{ steps.bump.outputs.version }}
+          PACKAGE: ${{ inputs.package }}
         run: |
           BOT_ID="$(gh api "/users/${APP_SLUG}[bot]" --jq .id)"
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
-          if [ "${{ steps.bump.outputs.changed }}" = "true" ]; then
-            git add package.json package-lock.json moon.mod
-            git commit -m "release: ${{ steps.bump.outputs.version }}"
+          if [ "$CHANGED" = "true" ]; then
+            git add "$DIR/package.json" package-lock.json
+            if [ "$PACKAGE" = "purus" ]; then git add moon.mod; fi
+            git commit -m "release($PACKAGE): v${VERSION}"
           fi
-          if ! git rev-parse -q --verify "refs/tags/${{ steps.bump.outputs.version }}" >/dev/null; then
-            git tag "${{ steps.bump.outputs.version }}"
+          if ! git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            git tag "${TAG}"
           fi
           # Fail before publishing if the bot cannot push (ruleset misconfigured).
-          git push --dry-run origin HEAD "${{ steps.bump.outputs.version }}"
+          git push --dry-run origin HEAD "${TAG}"
 
       # Trusted Publishing: no NODE_AUTH_TOKEN. npm exchanges the OIDC token for a
       # short-lived publish credential.
-      - run: npm install -g npm@11
-      - run: npm publish --access public --provenance --tag "${{ steps.bump.outputs.npm_tag }}"
+      - name: Publish to npm
+        env:
+          DIR: ${{ steps.pkg.outputs.dir }}
+          NAME: ${{ steps.pkg.outputs.name }}
+          NPM_TAG: ${{ steps.bump.outputs.npm_tag }}
+        run: |
+          if [ "$DIR" = "." ]; then
+            npm publish --access public --provenance --tag "$NPM_TAG"
+          else
+            npm publish -w "$NAME" --access public --provenance --tag "$NPM_TAG"
+          fi
 
       - name: Push commit and tag
-        run: git push origin HEAD "${{ steps.bump.outputs.version }}"
+        env:
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: git push origin HEAD "${TAG}"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG: ${{ steps.bump.outputs.tag }}
+          PREV: ${{ steps.bump.outputs.previous_tag }}
+          PRERELEASE: ${{ steps.bump.outputs.prerelease }}
         run: |
-          gh release create "${{ steps.bump.outputs.version }}" \
-            --title "${{ steps.bump.outputs.version }}" \
-            --generate-notes \
-            ${{ steps.bump.outputs.prerelease == 'true' && '--prerelease' || '' }}
+          ARGS=(--title "$TAG" --generate-notes)
+          if [ -n "$PREV" ]; then ARGS+=(--notes-start-tag "$PREV"); fi
+          if [ "$PRERELEASE" = "true" ]; then ARGS+=(--prerelease); fi
+          gh release create "$TAG" "${ARGS[@]}"
