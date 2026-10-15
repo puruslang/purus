@@ -11,7 +11,7 @@ pub(all) struct JsCodegen {
 
 ///|
 pub fn JsCodegen::new(cjs? : Bool = false) -> JsCodegen {
-  { buf: StringBuilder::new(), indent_level: 0, private_fields: [], declared_vars: [], cjs }
+  { buf: StringBuilder(), indent_level: 0, private_fields: [], declared_vars: [], cjs }
 }
 
 ///|

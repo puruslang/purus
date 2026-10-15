@@ -152,6 +152,11 @@ pub(all) enum TokenKind {
 } derive(Debug, Eq)
 
 ///|
+pub extend TokenKind with @debug.Debug::{to_repr}
+pub extend TokenKind with Eq::{not_equal, equal}
+pub extend TokenKind with Show::{to_string, output}
+
+///|
 pub impl Show for TokenKind with output(self, logger) {
   logger.write_string(Show::to_string(self))
 }
@@ -162,6 +167,10 @@ pub(all) struct Token {
   line : Int
   col : Int
 } derive(Debug)
+
+///|
+pub extend Token with @debug.Debug::{to_repr}
+pub extend Token with Show::{to_string, output}
 
 ///|
 pub impl Show for Token with output(self, logger) {

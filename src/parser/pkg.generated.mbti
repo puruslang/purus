@@ -35,6 +35,7 @@ pub(all) enum BinOp {
   Ushr
   Fdiv
 } derive(@debug.Debug)
+pub fn BinOp::to_repr(Self) -> @debug.Repr
 
 pub(all) struct ClassDecl {
   name : String

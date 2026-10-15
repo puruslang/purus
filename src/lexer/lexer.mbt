@@ -289,7 +289,7 @@ pub fn Lexer::tokenize(self : Lexer) -> Array[Token] {
 fn Lexer::scan_shebang(self : Lexer) -> Unit {
   let line = self.line
   let col = self.col
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   while self.pos < self.chars.length() && self.peek() != '\n' {
     buf.write_char(self.advance())
   }
@@ -327,7 +327,7 @@ fn Lexer::scan_line_comment(self : Lexer) -> Unit {
   let col = self.col
   self.advance() |> ignore // -
   self.advance() |> ignore // -
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   while self.pos < self.chars.length() && self.peek() != '\n' {
     buf.write_char(self.advance())
   }
@@ -342,7 +342,7 @@ fn Lexer::scan_block_comment(self : Lexer) -> Unit {
   self.advance() |> ignore
   self.advance() |> ignore
   self.advance() |> ignore
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   while self.pos < self.chars.length() {
     if self.peek() == '-' && self.peek_at(1) == '-' && self.peek_at(2) == '-' {
       self.advance() |> ignore
@@ -364,7 +364,7 @@ fn Lexer::scan_string(self : Lexer) -> Unit {
   self.advance() |> ignore
   self.advance() |> ignore
   let segments : Array[String] = []
-  let mut buf = StringBuilder::new()
+  let mut buf = StringBuilder()
   let mut has_interp = false
   while self.pos < self.chars.length() {
     if self.peek() == '/' && self.peek_at(1) == '/' && self.peek_at(2) == '/' {
@@ -393,9 +393,9 @@ fn Lexer::scan_string(self : Lexer) -> Unit {
     if self.peek() == '[' {
       has_interp = true
       segments.push(buf.to_string())
-      buf = StringBuilder::new()
+      buf = StringBuilder()
       self.advance() |> ignore // skip [
-      let expr_buf = StringBuilder::new()
+      let expr_buf = StringBuilder()
       let mut depth = 1
       while self.pos < self.chars.length() && depth > 0 {
         let ch = self.peek()
@@ -435,7 +435,7 @@ fn Lexer::scan_string_bracket(self : Lexer) -> Unit {
   self.advance() |> ignore
   self.advance() |> ignore
   let segments : Array[String] = []
-  let mut buf = StringBuilder::new()
+  let mut buf = StringBuilder()
   let mut has_interp = false
   while self.pos < self.chars.length() {
     // Closing: ;//
@@ -468,9 +468,9 @@ fn Lexer::scan_string_bracket(self : Lexer) -> Unit {
     if self.peek() == '[' {
       has_interp = true
       segments.push(buf.to_string())
-      buf = StringBuilder::new()
+      buf = StringBuilder()
       self.advance() |> ignore
-      let expr_buf = StringBuilder::new()
+      let expr_buf = StringBuilder()
       let mut depth = 1
       while self.pos < self.chars.length() && depth > 0 {
         let ch = self.peek()
@@ -504,7 +504,7 @@ fn Lexer::scan_regex(self : Lexer) -> Unit {
   let line = self.line
   let col = self.col
   self.advance() |> ignore // skip opening /
-  let pattern = StringBuilder::new()
+  let pattern = StringBuilder()
   while self.pos < self.chars.length() && self.peek() != '/' {
     if self.peek() == '\\' {
       pattern.write_char(self.advance()) // backslash
@@ -519,7 +519,7 @@ fn Lexer::scan_regex(self : Lexer) -> Unit {
     self.advance() |> ignore // skip closing /
   }
   // Read flags
-  let flags = StringBuilder::new()
+  let flags = StringBuilder()
   while self.pos < self.chars.length() {
     let ch = self.peek()
     if ch == 'g' ||
@@ -594,7 +594,7 @@ fn Lexer::scan_number(self : Lexer) -> Unit {
     return
   }
   // Decimal number
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   if negative {
     buf.write_char('-')
   }
@@ -648,7 +648,7 @@ fn Lexer::is_neg_literal_context(self : Lexer) -> Bool {
 fn Lexer::scan_ident(self : Lexer) -> Unit {
   let line = self.line
   let col = self.col
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   buf.write_char(self.advance())
   while self.pos < self.chars.length() && is_ident_char(self.peek()) {
     buf.write_char(self.advance())
