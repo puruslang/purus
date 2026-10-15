@@ -118,6 +118,9 @@ pub(all) enum BinOp {
 } derive(Debug)
 
 ///|
+pub extend BinOp with @debug.Debug::{to_repr}
+
+///|
 pub(all) struct MatchArm {
   pattern : MatchPattern
   cond : Expr?

@@ -95,7 +95,7 @@ fn cmd_build(args : Array[String]) -> Unit {
   // Write output to file
   let base_and_ext = if file.has_suffix(".cpurus") {
     let chars = file.to_array()
-    let buf = StringBuilder::new()
+    let buf = StringBuilder()
     let mut i = 0
     while i < chars.length() - 7 {
       buf.write_char(chars[i])
@@ -104,7 +104,7 @@ fn cmd_build(args : Array[String]) -> Unit {
     (buf.to_string(), ".cjs")
   } else if file.has_suffix(".mpurus") {
     let chars = file.to_array()
-    let buf = StringBuilder::new()
+    let buf = StringBuilder()
     let mut i = 0
     while i < chars.length() - 7 {
       buf.write_char(chars[i])
@@ -113,7 +113,7 @@ fn cmd_build(args : Array[String]) -> Unit {
     (buf.to_string(), ".mjs")
   } else if file.has_suffix(".purus") {
     let chars = file.to_array()
-    let buf = StringBuilder::new()
+    let buf = StringBuilder()
     let mut i = 0
     while i < chars.length() - 6 {
       buf.write_char(chars[i])
@@ -160,8 +160,8 @@ fn cmd_check(file : String) -> Unit {
 
 ///|
 fn main {
-  let args = @sys.get_cli_args()
-  // args[0] is the program name
+  // On the JS backend `@env.args()` is `process.argv` (node, script, ...); drop the runtime so args[0] is the script
+  let args = @env.args()[1:].to_owned()
   if args.length() < 2 {
     return
   }
