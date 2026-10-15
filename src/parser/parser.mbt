@@ -29,11 +29,29 @@ fn Parser::advance(self : Parser) -> @lexer.TokenKind {
 }
 
 ///|
+/// Position of the current token as "line:col" (the last token when past the end).
+fn Parser::position(self : Parser) -> String {
+  if self.tokens.length() == 0 {
+    return "1:1"
+  }
+  let idx = if self.pos >= self.tokens.length() {
+    self.tokens.length() - 1
+  } else {
+    self.pos
+  }
+  let tok = self.tokens[idx]
+  tok.line.to_string() + ":" + tok.col.to_string()
+}
+
+///|
 fn Parser::expect(self : Parser, expected : @lexer.TokenKind) -> Unit {
+  let at = self.position()
   let got = self.advance()
-  // We just skip if it doesn't match for now (permissive parsing)
-  let _ = got
-  let _ = expected
+  if got != expected {
+    self.errors.push(
+      at + ": expected " + expected.to_string() + " but found " + got.to_string(),
+    )
+  }
 }
 
 ///|
