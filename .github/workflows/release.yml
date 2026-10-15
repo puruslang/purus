@@ -1,63 +1,141 @@
 name: Release
 
+# Manually triggered release: bump the version, publish to npm with Trusted
+# Publishing (OIDC, no NPM_TOKEN), then commit, tag and create a GitHub Release.
+#
+# Requirements (see #13 and #14):
+#   - npm: Trusted Publisher configured for this package and this workflow
+#     (package Settings -> Trusted publishers -> GitHub, workflow "release.yml").
+#   - GitHub: the "purus-release" GitHub App installed on this repository, its
+#     credentials stored as RELEASE_APP_ID (variable) and RELEASE_APP_PRIVATE_KEY
+#     (secret) in the "release" environment, and the app set as the only bypass
+#     actor of the main branch ruleset and the v* tag ruleset.
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
+    inputs:
+      version:
+        description: "Version to release: a semver bump (patch/minor/major/prerelease) or an explicit version (e.g. 1.2.0)"
+        required: true
+        default: patch
+      dist_tag:
+        description: 'npm dist-tag. Leave empty to auto-detect: the prerelease identifier (e.g. "beta" from 1.2.0-beta.0), or "latest".'
+        required: false
+        default: ""
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing (OIDC)
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Short-lived token of the release bot. It is the only identity allowed to
+      # push to the protected main branch and to create v* tags.
+      - id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          node-version: "22"
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
           registry-url: "https://registry.npmjs.org"
+          cache: npm
 
       - name: Install MoonBit
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
-      - name: Update dependencies
-        run: moon update
+      - run: npm ci
+      - run: moon update
+      - run: moon check
+      - run: moon test
 
-      - name: Build compiler (MoonBit -> JS)
-        run: moon build --target js
+      - name: Bump version
+        id: bump
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+          DIST_TAG_INPUT: ${{ inputs.dist_tag }}
+        run: |
+          OLD="$(node -p "require('./package.json').version")"
+          npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
+          node scripts/sync-version.js
+          NEW="$(node -p "require('./package.json').version")"
+          echo "version=v${NEW}" >> "$GITHUB_OUTPUT"
+          if [ "$OLD" = "$NEW" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Version is already ${NEW}; skipping the bump commit but still releasing."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Copy build output
-        run: node scripts/build.js
+          if [[ "$NEW" == *-* ]]; then
+            REST="${NEW#*-}"
+            PRERELEASE_ID="${REST%%.*}"
+          else
+            PRERELEASE_ID=""
+          fi
+          TAG="$DIST_TAG_INPUT"
+          if [ -z "$TAG" ]; then
+            if [ -n "$PRERELEASE_ID" ]; then TAG="$PRERELEASE_ID"; else TAG="latest"; fi
+          fi
+          echo "npm_tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$([ "$TAG" = "latest" ] && echo false || echo true)" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: npm run build
 
       - name: Verify package
-        run: node -e "const p = require('.'); console.log('version:', p.version)"
+        run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
 
-      - name: Publish to npm
-        run: npm publish --access public --provenance
+      - name: Commit and tag (local)
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Get version
-        id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
-      - name: Create tag (workflow_dispatch)
-        if: github.event_name == 'workflow_dispatch'
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          git tag "v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
+          BOT_ID="$(gh api "/users/${APP_SLUG}[bot]" --jq .id)"
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          if [ "${{ steps.bump.outputs.changed }}" = "true" ]; then
+            git add package.json package-lock.json moon.mod
+            git commit -m "release: ${{ steps.bump.outputs.version }}"
+          fi
+          if ! git rev-parse -q --verify "refs/tags/${{ steps.bump.outputs.version }}" >/dev/null; then
+            git tag "${{ steps.bump.outputs.version }}"
+          fi
+          # Fail before publishing if the bot cannot push (ruleset misconfigured).
+          git push --dry-run origin HEAD "${{ steps.bump.outputs.version }}"
+
+      # Trusted Publishing: no NODE_AUTH_TOKEN. npm exchanges the OIDC token for a
+      # short-lived publish credential.
+      - run: npm install -g npm@11
+      - run: npm publish --access public --provenance --tag "${{ steps.bump.outputs.npm_tag }}"
+
+      - name: Push commit and tag
+        run: git push origin HEAD "${{ steps.bump.outputs.version }}"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: v${{ steps.version.outputs.version }}
-          generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh release create "${{ steps.bump.outputs.version }}" \
+            --title "${{ steps.bump.outputs.version }}" \
+            --generate-notes \
+            ${{ steps.bump.outputs.prerelease == 'true' && '--prerelease' || '' }}
