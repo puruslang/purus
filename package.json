@@ -59,6 +59,9 @@
     "url": "https://github.com/sponsors/otnc"
   },
   "homepage": "https://purus.work",
+  "workspaces": [
+    "packages/*"
+  ],
   "engines": {
     "node": ">=22"
   },

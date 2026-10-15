@@ -54,6 +54,9 @@ jobs:
       - name: Verify API
         run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
 
+      - name: Test workspace packages
+        run: npm test --workspaces --if-present
+
       - name: Compile examples
         shell: bash
         run: |
