@@ -14,6 +14,7 @@ puruslang/purus
 ├── pkg/          # Published npm package output
 ├── bin/          # CLI entry point
 ├── scripts/      # Build & sync scripts
+├── packages/     # Tooling workspaces (linter, ...), see docs/adr/0001-monorepo.md
 ├── examples/     # Sample .purus files
 ├── moon.mod # MoonBit module definition
 └── package.json
@@ -51,10 +52,19 @@ node scripts/build.js
 3. Run `moon test` — all tests must pass
 4. Open a PR with a clear description
 
+## Conventions
+
+- Write code, comments, commit messages and PR text in English.
+- Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`).
+- Branch names: `feat/...`, `fix/...`, `chore/...`, `docs/...`. `main` is protected and changes land through pull requests.
+- Keep commits focused: do not mix a file move with a content change, or a refactor with a behaviour change.
+- Run `moon info && moon fmt` before committing and check the `.mbti` diff.
+- A language change needs tests, an update to `RFC.md`, and follow-up issues for the linter, prettier plugin, editor grammar and docs.
+- AI agents follow [AGENTS.md](AGENTS.md).
+
 ## Release
 
-Releases are triggered by pushing a `v*` tag (e.g., `v1.1.0`), which publishes to npm automatically.
-
+Releases are cut by maintainers. The release procedure is being moved to a manually triggered workflow with npm Trusted Publishing (see [#13](https://github.com/puruslang/purus/issues/13) and [#14](https://github.com/puruslang/purus/issues/14)). Until then, pushing a `v*` tag (for example `v1.1.0`) publishes to npm.
 ## Other Repositories
 
 | Repo | Description |

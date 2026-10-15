@@ -2,7 +2,7 @@
 /// Token types for the purus language lexer.
 pub(all) enum TokenKind {
   // Literals
-  Int(Int)
+  Int(Int32)
   BigInt(String) // BigInt literal e.g. 100n
   Float(Double)
   Str(String) // already-parsed string content (no ///)
@@ -136,7 +136,7 @@ pub(all) enum TokenKind {
 
   // Line-related
   Newline
-  Indent(Int) // indentation level (number of spaces)
+  Indent(Int32) // indentation level (number of spaces)
 
   // Interpolated string
   InterpStr(Array[String]) // alternating: lit, expr, lit, expr, ..., lit
@@ -152,18 +152,33 @@ pub(all) enum TokenKind {
 } derive(Debug, Eq)
 
 ///|
-pub impl Show for TokenKind with output(self, logger) {
+pub extend TokenKind with @debug.Debug::{to_repr}
+
+///|
+pub extend TokenKind with Eq::{not_equal, equal}
+
+///|
+pub extend TokenKind with Show::{to_string, output}
+
+///|
+pub impl Show for TokenKind with fn output(self, logger) {
   logger.write_string(Show::to_string(self))
 }
 
 ///|
 pub(all) struct Token {
   kind : TokenKind
-  line : Int
-  col : Int
+  line : Int32
+  col : Int32
 } derive(Debug)
 
 ///|
-pub impl Show for Token with output(self, logger) {
+pub extend Token with @debug.Debug::{to_repr}
+
+///|
+pub extend Token with Show::{to_string, output}
+
+///|
+pub impl Show for Token with fn output(self, logger) {
   logger.write_string(Show::to_string(self))
 }

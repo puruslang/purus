@@ -1,3 +1,4 @@
 import {
   "puruslang/purus/src/lexer",
+  "moonbitlang/core/debug",
 }

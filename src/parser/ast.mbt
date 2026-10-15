@@ -2,7 +2,7 @@
 /// AST node types for the purus language.
 pub(all) enum Expr {
   // Literals
-  IntLit(Int)
+  IntLit(Int32)
   BigIntLit(String) // BigInt literal e.g. 100n → 100n
   FloatLit(Double)
   StrLit(String) // raw string content
@@ -21,7 +21,7 @@ pub(all) enum Expr {
   // Identifiers & access
   Ident(String)
   DotAccess(Expr, String) // obj.field
-  IndexAccess(Expr, Int) // arr.0
+  IndexAccess(Expr, Int32) // arr.0
 
   // Operators
   BinOp(BinOp, Expr, Expr)
@@ -116,6 +116,9 @@ pub(all) enum BinOp {
   Ushr
   Fdiv
 } derive(Debug)
+
+///|
+pub extend BinOp with @debug.Debug::{to_repr}
 
 ///|
 pub(all) struct MatchArm {
