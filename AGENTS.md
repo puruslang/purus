@@ -34,6 +34,10 @@ Before finishing a change, run `moon info && moon fmt`, then `moon check` and `m
 - A language change needs all of: the compiler change with tests, an update to [RFC.md](RFC.md), and a note for the other repositories (linter, prettier plugin, editor grammar, docs).
 - When unsure about a design decision that belongs to the maintainer, ask instead of guessing.
 
+## Skills
+
+Skills follow the [Skills CLI](https://github.com/vercel-labs/skills) layout. Contributor skills live in `.agents/skills/`: `purus-compiler-dev` (how to change the compiler), `release` (how to cut a release), and the prose and comment style skills (`hush*`, `fix-unnatural-line-breaks`). The user-facing `purus-language` skill (how to write Purus) lives in `skills/` and is installable with `npx skills add puruslang/purus --skill purus-language`. Every skill needs `name` (equal to its directory) and `description` in the `SKILL.md` frontmatter. Issue handling is described in [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md).
+
 ## Do not
 
 - Edit generated files by hand: `pkg.generated.mbti`, `pkg/lib/purus-compiler.js`, `_build/`.
