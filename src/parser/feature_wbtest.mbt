@@ -160,7 +160,9 @@ test "parser: splice assignment" {
 
 ///|
 test "parser: const destructuring" {
-  let stmts = Parser::new(@lexer.Lexer::new("const [a; b] be weather").tokenize()).parse()
+  let stmts = Parser::new(
+    @lexer.Lexer::new("const [a; b] be weather").tokenize(),
+  ).parse()
   match stmts[0] {
     DestructDecl(Const_, names, Ident(src)) => {
       assert_eq(names.length(), 2)
@@ -253,7 +255,9 @@ test "parser: computed access with number" {
 
 ///|
 test "parser: side-effect import" {
-  let stmts = Parser::new(@lexer.Lexer::new("import ///dotenv/config///").tokenize()).parse()
+  let stmts = Parser::new(
+    @lexer.Lexer::new("import ///dotenv/config///").tokenize(),
+  ).parse()
   match stmts[0] {
     ImportDecl(SideEffectImport(path, _)) => assert_eq(path, "dotenv/config")
     _ => fail("expected SideEffectImport")

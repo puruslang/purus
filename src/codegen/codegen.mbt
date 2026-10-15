@@ -3,15 +3,21 @@
 /// Traverses the AST and emits JavaScript source code.
 pub(all) struct JsCodegen {
   buf : StringBuilder
-  mut indent_level : Int
+  mut indent_level : Int32
   mut private_fields : Array[String] // tracks private field names in current class
   mut declared_vars : Array[String] // tracks declared variable names for auto-init
   cjs : Bool // CommonJS mode
 }
 
 ///|
-pub fn JsCodegen::new(cjs? : Bool = false) -> JsCodegen {
-  { buf: StringBuilder(), indent_level: 0, private_fields: [], declared_vars: [], cjs }
+pub fn JsCodegen::new(cjs~ : Bool = false) -> JsCodegen {
+  {
+    buf: StringBuilder(),
+    indent_level: 0,
+    private_fields: [],
+    declared_vars: [],
+    cjs,
+  }
 }
 
 ///|
@@ -154,9 +160,9 @@ fn JsCodegen::write_indent(self : JsCodegen) -> Unit {
 pub fn JsCodegen::generate(
   self : JsCodegen,
   stmts : Array[@parser.Stmt],
-  header? : String = "",
-  shebang? : String = "",
-  strict? : Bool = true,
+  header~ : String = "",
+  shebang~ : String = "",
+  strict~ : Bool = true,
 ) -> String {
   if shebang.length() > 0 {
     self.buf.write_string(shebang)
@@ -803,7 +809,10 @@ fn JsCodegen::gen_fn_decl(self : JsCodegen, decl : @parser.FnDecl) -> Unit {
 }
 
 ///|
-fn JsCodegen::gen_class_decl(self : JsCodegen, decl : @parser.ClassDecl) -> Unit {
+fn JsCodegen::gen_class_decl(
+  self : JsCodegen,
+  decl : @parser.ClassDecl,
+) -> Unit {
   let saved_private = self.private_fields
   self.private_fields = []
   // Collect private field names

@@ -3,16 +3,16 @@
 /// Converts source text into a stream of tokens.
 pub(all) struct Lexer {
   chars : Array[Char]
-  mut pos : Int
-  mut line : Int
-  mut col : Int
+  mut pos : Int32
+  mut line : Int32
+  mut col : Int32
   mut tokens : Array[Token]
 }
 
 ///|
 pub fn Lexer::new(source : String) -> Lexer {
   let chars = source.to_array()
-  { chars, pos: 0, line: 1, col: 1, tokens: [] }
+  { chars, pos: 0, line: 1, col: 1, tokens: [], }
 }
 
 ///|
@@ -25,7 +25,7 @@ fn Lexer::peek(self : Lexer) -> Char {
 }
 
 ///|
-fn Lexer::peek_at(self : Lexer, offset : Int) -> Char {
+fn Lexer::peek_at(self : Lexer, offset : Int32) -> Char {
   let i = self.pos + offset
   if i >= self.chars.length() {
     '\u0000'
@@ -48,8 +48,13 @@ fn Lexer::advance(self : Lexer) -> Char {
 }
 
 ///|
-fn Lexer::emit(self : Lexer, kind : TokenKind, line : Int, col : Int) -> Unit {
-  self.tokens.push({ kind, line, col })
+fn Lexer::emit(
+  self : Lexer,
+  kind : TokenKind,
+  line : Int32,
+  col : Int32,
+) -> Unit {
+  self.tokens.push({ kind, line, col, })
 }
 
 ///|
@@ -78,7 +83,7 @@ fn is_hex_digit(ch : Char) -> Bool {
 }
 
 ///|
-fn parse_int(s : String) -> Int {
+fn parse_int(s : String) -> Int32 {
   let chars = s.to_array()
   let mut result = 0
   let mut i = 0
