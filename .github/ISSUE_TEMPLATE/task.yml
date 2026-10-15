@@ -1,0 +1,15 @@
+name: Task
+description: Refactoring, chores or other maintenance work
+labels: [refactor]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: "- [ ] ..."

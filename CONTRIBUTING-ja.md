@@ -51,10 +51,19 @@ node scripts/build.js
 3. `moon test` を実行 — 全テストがパスすること
 4. 明確な説明を添えて PR を提出
 
+## 規約
+
+- コード、コメント、コミットメッセージ、PR の文章は英語で書きます。
+- コミットメッセージは [Conventional Commits](https://www.conventionalcommits.org/) に従います(`feat:`、`fix:`、`refactor:`、`docs:`、`chore:`、`test:`)。
+- ブランチ名は `feat/...`、`fix/...`、`chore/...`、`docs/...` にします。`main` は保護される予定で、変更はプルリクエストで取り込みます。
+- コミットは関心ごとに分けます。ファイルの移動と中身の変更、リファクタと挙動の変更は混ぜません。
+- コミットの前に `moon info && moon fmt` を実行し、`.mbti` の差分を確認します。
+- 言語仕様を変えるときは、テスト、`RFC.md` の更新、linter、prettier plugin、エディタの文法、docs へのフォローアップ Issue が必要です。
+- AI エージェントは [AGENTS.md](AGENTS.md) に従います。
+
 ## リリース
 
-`v*` タグ（例: `v1.1.0`）をプッシュすると、自動的に npm に公開されます。
-
+リリースはメンテナーが行います。手動実行のワークフローと npm Trusted Publishing に移行する予定です([#13](https://github.com/puruslang/purus/issues/13)、[#14](https://github.com/puruslang/purus/issues/14))。それまでは `v*` タグ(例: `v1.1.0`)をプッシュすると npm に公開されます。
 ## 関連リポジトリ
 
 | リポジトリ | 説明 |
