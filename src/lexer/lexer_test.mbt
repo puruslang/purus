@@ -95,6 +95,6 @@ test "lexer: public keyword" {
 test "token kinds can be shown without recursing" {
   assert_eq(@lexer.TokenKind::Eof.to_string(), "Eof")
   assert_eq(@lexer.TokenKind::Ident("x").to_string(), "Ident(\"x\")")
-  let tok : @lexer.Token = { kind: Newline, line: 1, col: 2 }
+  let tok : @lexer.Token = { kind: Newline, line: 1, col: 2, }
   assert_true(tok.to_string().contains("Newline"))
 }
