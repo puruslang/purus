@@ -14,7 +14,7 @@
     "noshift"
   ],
   "scripts": {
-    "test": "npx vitest run"
+    "test": "vitest run"
   },
   "peerDependencies": {
     "prettier": "^3.0.0"
@@ -23,10 +23,11 @@
   "homepage": "https://purus.work",
   "repository": {
     "type": "git",
-    "url": "https://github.com/puruslang/prettier-plugin"
+    "url": "git+https://github.com/puruslang/purus.git",
+    "directory": "packages/prettier-plugin"
   },
   "bugs": {
-    "url": "https://github.com/puruslang/prettier-plugin/issues"
+    "url": "https://github.com/puruslang/purus/issues"
   },
   "funding": {
     "url": "https://github.com/sponsors/otnc"
