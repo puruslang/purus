@@ -57,6 +57,9 @@ jobs:
       - name: Test workspace packages
         run: npm test --workspaces --if-present
 
+      - name: Build workspace packages
+        run: npm run build --workspaces --if-present
+
       - name: Compile examples
         shell: bash
         run: |

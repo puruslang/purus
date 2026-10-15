@@ -2,6 +2,11 @@
   "name": "purus-mcp",
   "version": "0.1.0",
   "description": "MCP server for the Purus programming language",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puruslang/purus.git",
+    "directory": "packages/mcp"
+  },
   "main": "dist/index.js",
   "bin": {
     "purus-mcp": "dist/index.js"
