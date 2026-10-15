@@ -4,7 +4,7 @@ One-time setup for the release workflows `.github/workflows/release-<package>.ym
 
 ## npm Trusted Publisher
 
-On npmjs.com, for every released package (`purus`, `@puruslang/linter`, `@puruslang/prettier-plugin-purus`, and the language server and MCP packages once published): package -> Settings -> Trusted Publisher -> GitHub Actions. Organization `puruslang`, repository `purus`, workflow `release-<package>.yml` (for example `release-linter.yml`, the file that is triggered, not `_release.yml`), environment `release`. No `NPM_TOKEN` is needed afterwards; remove the old secret.
+On npmjs.com, for every released package (`purus`, `@puruslang/linter`, `@puruslang/prettier-plugin-purus`, and `@puruslang/lsp` and `@puruslang/mcp` once they are first published): package -> Settings -> Trusted Publisher -> GitHub Actions. Organization `puruslang`, repository `purus`, workflow `release-<package>.yml` (for example `release-linter.yml`, the file that is triggered, not `_release.yml`), environment `release`. No `NPM_TOKEN` is needed afterwards; remove the old secret.
 
 ## GitHub App `purus-release`
 

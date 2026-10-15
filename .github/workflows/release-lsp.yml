@@ -1,7 +1,7 @@
-name: Release language-server
+name: Release lsp
 
-# Releases the language-server package. The steps live in _release.yml.
-# Trusted Publisher on npmjs.com: workflow release-language-server.yml, environment release.
+# Releases the lsp package. The steps live in _release.yml.
+# Trusted Publisher on npmjs.com: workflow release-lsp.yml, environment release.
 on:
   workflow_dispatch:
     inputs:
@@ -24,7 +24,7 @@ jobs:
       id-token: write # npm Trusted Publishing (OIDC)
     uses: ./.github/workflows/_release.yml
     with:
-      package: language-server
+      package: lsp
       version: ${{ inputs.version }}
       dist_tag: ${{ inputs.dist_tag }}
     secrets: inherit

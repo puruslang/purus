@@ -5,7 +5,7 @@ description: Cut a release of the purus npm package with the manual release work
 
 # Releasing Purus
 
-Each package has its own manually triggered workflow (`.github/workflows/release-<package>.yml` for `purus`, `linter`, `prettier-plugin`, `language-server`, `mcp`); the shared steps live in `.github/workflows/_release.yml`. Versions and tag prefixes are independent per package (`v1.2.0` for the compiler, `linter-v1.2.0` for the others). Do not publish from a laptop and do not push `v*` tags by hand.
+Each package has its own manually triggered workflow (`.github/workflows/release-<package>.yml` for `purus`, `linter`, `prettier-plugin`, `lsp`, `mcp`); the shared steps live in `.github/workflows/_release.yml`. Versions and tag prefixes are independent per package (`v1.2.0` for the compiler, `linter-v1.2.0` for the others). Do not publish from a laptop and do not push `v*` tags by hand.
 
 ## Before triggering
 

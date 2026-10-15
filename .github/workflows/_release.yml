@@ -13,7 +13,7 @@ on:
   workflow_call:
     inputs:
       package:
-        description: "Package to release: purus, linter, prettier-plugin, language-server or mcp"
+        description: "Package to release: purus, linter, prettier-plugin, lsp or mcp"
         type: string
         required: true
       version:
@@ -72,7 +72,7 @@ jobs:
           case "$PACKAGE" in
             purus)
               DIR="."; TAG_PREFIX="v" ;;
-            linter | prettier-plugin | language-server | mcp)
+            linter | prettier-plugin | lsp | mcp)
               DIR="packages/$PACKAGE"; TAG_PREFIX="$PACKAGE-v" ;;
             *)
               echo "::error::Unknown package: $PACKAGE"; exit 1 ;;
