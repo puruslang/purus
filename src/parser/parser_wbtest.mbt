@@ -550,3 +550,18 @@ test "parser: keyword as property access (dot / optional dot)" {
     _ => fail("expected OptDotAccess with field 'then'")
   }
 }
+
+///|
+test "parser: a missing token is reported with its position" {
+  let parser = Parser::new(tokenize("if x gt 1 then\n"))
+  let _ = parser.parse()
+  assert_eq(parser.errors.length(), 1)
+  assert_true(parser.errors[0].has_prefix("2:1: expected "))
+}
+
+///|
+test "parser: valid input records no errors" {
+  let parser = Parser::new(tokenize("const x be if true then 1 else 2\n"))
+  let _ = parser.parse()
+  assert_eq(parser.errors.length(), 0)
+}
