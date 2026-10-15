@@ -1,0 +1,50 @@
+---
+name: purus-compiler-dev
+description: Work on the Purus compiler (MoonBit) - add or change syntax, fix lexer/parser/codegen bugs, update tests and the language spec. Use when editing files under src/, RFC.md or the generated interfaces.
+---
+
+# Purus compiler development
+
+## Layout
+
+```
+src/lexer/    tokens and the lexer (token.mbt, lexer.mbt)
+src/parser/   AST (ast.mbt) and recursive-descent parser (parser.mbt, parser_expr.mbt)
+src/codegen/  JavaScript generation (codegen.mbt, codegen_expr.mbt)
+src/cmd/main/ CLI entry, built to JS and copied into pkg/lib/purus-compiler.js
+pkg/          npm wrapper (lib/, stdlib/)  - hand-written JavaScript
+RFC.md        language specification
+examples/     sample .purus files
+```
+
+Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate`. The standard library (`p-*`) is not compiled: codegen emits a marker comment and `pkg/lib/stdlib.js` replaces it with code from `pkg/stdlib/*.js`.
+
+## Commands
+
+```sh
+moon check                 # type check, must have 0 errors and 0 warnings
+moon test --target js      # all tests (needs Node on PATH)
+moon info                  # regenerate pkg.generated.mbti; review the diff
+npm run build              # moon build --target js + copy to pkg/lib
+node bin/purus.js build --stdout file.purus   # inspect generated JS
+```
+
+Do not run `moon fmt` and commit its output together with a functional change: the formatter of recent toolchains rewrites many files (for example `Int` to `Int32`). Format in a dedicated commit.
+
+## Adding or changing syntax (checklist)
+
+1. Add tokens in `token.mbt` and lex them in `lexer.mbt` (keywords also go in the keyword table and in `keyword_text` in `parser.mbt` so they can be used as property names).
+2. Extend the AST in `ast.mbt`; update every walker that matches on it (for example the `*_has_yield` functions in `codegen.mbt`). A missing arm silently drops the node.
+3. Parse it in `parser.mbt` / `parser_expr.mbt`; report errors with `self.errors`, not by panicking.
+4. Generate JS in `codegen.mbt` / `codegen_expr.mbt`.
+5. Tests: lexer tests (`lexer_test.mbt`, `lexer_wbtest.mbt`), parser feature tests (`feature_wbtest.mbt`), codegen tests (`codegen_test.mbt`, `integration_test.mbt`). Prefer `assert_eq` on the generated JS for stable outputs; use snapshots only for large outputs.
+6. Document it in `RFC.md` (keyword table, grammar summary) and add an example when useful.
+7. Open follow-up issues for the other repositories: linter, prettier plugin, editor grammar, language server, docs.
+
+## Pitfalls
+
+- Test sources are Purus strings inside MoonBit: escape backslashes (`\\.` for the optional dot).
+- Keywords are reserved: a test function named `add` or `range` will not parse as a name.
+- `fn x to expr` does not return the value; tests that need a return use `to return expr` (see issue #60).
+- The generated `pkg/lib/purus-compiler.js` and `_build/` are build outputs; never edit them.
+- On Windows PowerShell, Node may be missing from PATH (fnm); run `fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression` first.
