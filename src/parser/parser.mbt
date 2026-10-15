@@ -3,13 +3,13 @@
 /// Converts a token stream into an AST.
 pub(all) struct Parser {
   tokens : Array[@lexer.Token]
-  mut pos : Int
+  mut pos : Int32
   errors : Array[String]
 }
 
 ///|
 pub fn Parser::new(tokens : Array[@lexer.Token]) -> Parser {
-  { tokens, pos: 0, errors: [] }
+  { tokens, pos: 0, errors: [], }
 }
 
 ///|
@@ -37,7 +37,7 @@ fn Parser::expect(self : Parser, expected : @lexer.TokenKind) -> Unit {
 }
 
 ///|
-fn Parser::skip_newlines_and_indent(self : Parser) -> Int {
+fn Parser::skip_newlines_and_indent(self : Parser) -> Int32 {
   let mut indent = 0
   while self.pos < self.tokens.length() {
     match self.peek() {
@@ -81,7 +81,7 @@ pub fn Parser::parse(self : Parser) -> Array[Stmt] {
 }
 
 ///|
-fn Parser::parse_block(self : Parser, min_indent : Int) -> Array[Stmt] {
+fn Parser::parse_block(self : Parser, min_indent : Int32) -> Array[Stmt] {
   let stmts : Array[Stmt] = []
   // Parse the first statement (indent was already consumed by caller)
   match self.parse_stmt() {
@@ -545,7 +545,7 @@ fn Parser::parse_fn_decl(self : Parser, is_async : Bool) -> Stmt? {
     self.skip_type_annotation()
   }
   let body : FnBody = self.parse_to_body()
-  let decl : FnDecl = { name, params, body, is_async, is_generator: false }
+  let decl : FnDecl = { name, params, body, is_async, is_generator: false, }
   Some(FnDecl(decl))
 }
 
@@ -614,7 +614,7 @@ fn Parser::parse_if_stmt(self : Parser) -> Stmt {
         let elif_cond = self.parse_expr()
         let elif_indent = self.skip_newlines_and_indent()
         let elif_body = self.parse_block(elif_indent)
-        elifs.push({ cond: elif_cond, body: elif_body })
+        elifs.push({ cond: elif_cond, body: elif_body, })
       }
       Else_ => {
         self.pos += 1
@@ -624,7 +624,7 @@ fn Parser::parse_if_stmt(self : Parser) -> Stmt {
           let elif_cond = self.parse_expr()
           let elif_indent = self.skip_newlines_and_indent()
           let elif_body = self.parse_block(elif_indent)
-          elifs.push({ cond: elif_cond, body: elif_body })
+          elifs.push({ cond: elif_cond, body: elif_body, })
         } else {
           let else_indent = self.skip_newlines_and_indent()
           else_body = Some(self.parse_block(else_indent))
@@ -812,7 +812,10 @@ fn Parser::parse_match_stmt(self : Parser) -> Stmt {
 }
 
 ///|
-fn Parser::parse_match_arms(self : Parser, min_indent : Int) -> Array[MatchArm] {
+fn Parser::parse_match_arms(
+  self : Parser,
+  min_indent : Int32,
+) -> Array[MatchArm] {
   let arms : Array[MatchArm] = []
   // Parse the first arm (indent already consumed by caller)
   self.parse_one_match_arm(arms) |> ignore
@@ -852,7 +855,7 @@ fn Parser::parse_one_match_arm(self : Parser, arms : Array[MatchArm]) -> Bool {
         let bi = self.skip_newlines_and_indent()
         BlockBody(self.parse_block(bi))
       }
-      arms.push({ pattern, cond: cond_val, body })
+      arms.push({ pattern, cond: cond_val, body, })
       true
     }
     Else_ | Default_ => {
@@ -863,7 +866,7 @@ fn Parser::parse_one_match_arm(self : Parser, arms : Array[MatchArm]) -> Bool {
         let bi = self.skip_newlines_and_indent()
         BlockBody(self.parse_block(bi))
       }
-      arms.push({ pattern: BindPat("_"), cond: None, body })
+      arms.push({ pattern: BindPat("_"), cond: None, body, })
       true
     }
     _ => false
@@ -1194,7 +1197,7 @@ fn Parser::parse_class_decl(self : Parser) -> Stmt {
       None => self.pos += 1
     }
   }
-  ClassDecl({ name, parent, members })
+  ClassDecl({ name, parent, members, })
 }
 
 ///|
