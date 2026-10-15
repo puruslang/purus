@@ -23,4 +23,3 @@ pub fn JsCodegen::new(cjs? : Bool) -> Self
 // Type aliases
 
 // Traits
-
