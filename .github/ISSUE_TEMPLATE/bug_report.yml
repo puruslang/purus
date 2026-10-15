@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a compiler or CLI bug
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Purus version
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Purus source that reproduces the problem
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Node.js version, package manager

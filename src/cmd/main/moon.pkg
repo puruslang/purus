@@ -3,9 +3,8 @@ import {
   "puruslang/purus/src/parser",
   "puruslang/purus/src/codegen",
   "moonbitlang/x/sys",
+  "moonbitlang/core/env",
   "moonbitlang/x/fs",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

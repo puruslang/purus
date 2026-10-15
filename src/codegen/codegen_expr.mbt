@@ -574,7 +574,7 @@ fn compound_op_str(op : @parser.BinOp) -> String {
 ///|
 /// Escape a string for JavaScript string literals
 fn js_escape_str(s : String) -> String {
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   let chars = s.to_array()
   for c in chars {
     match c {
@@ -592,7 +592,7 @@ fn js_escape_str(s : String) -> String {
 ///|
 /// Escape for JS template literals (backtick strings)
 fn js_escape_template(s : String) -> String {
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   let chars = s.to_array()
   for c in chars {
     match c {

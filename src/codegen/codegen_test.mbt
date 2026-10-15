@@ -1278,3 +1278,35 @@ test "codegen: keyword property access" {
   let js2 = compile("const u be obj\\.then")
   assert_eq(js2, "const u = obj?.then;\n")
 }
+
+///|
+test "codegen: typed params are erased" {
+  let js = compile("fn m a of Number to return a\nconst z be 1")
+  assert_eq(js, "function m(a) { return a; }\nconst z = 1;\n")
+}
+
+///|
+test "codegen: typed params with return type" {
+  let js = compile(
+    "fn plus a of Number; b of Number gives Number to return a add b\nconst z be 1",
+  )
+  assert_eq(js, "function plus(a, b) { return a + b; }\nconst z = 1;\n")
+}
+
+///|
+test "codegen: generic-looking param type in brackets" {
+  let js = compile("fn first xs of Array[Number]; n of Number to return xs")
+  assert_eq(js, "function first(xs, n) { return xs; }\n")
+}
+
+///|
+test "codegen: typed param in block body fn" {
+  let js = compile("fn m a of Number gives Number\n  return a\nconst z be 1")
+  assert_eq(js, "function m(a) {\n  return a;\n}\nconst z = 1;\n")
+}
+
+///|
+test "codegen: typed param in anonymous fn" {
+  let js = compile("const f be fn a of Number to return a\nconst z be 1")
+  assert_eq(js, "const f = (a) => a;\nconst z = 1;\n")
+}
