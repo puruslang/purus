@@ -153,6 +153,7 @@ pub(all) enum MatchPattern {
 pub(all) struct Parser {
   tokens : Array[@lexer.Token]
   mut pos : Int
+  errors : Array[String]
 }
 pub fn Parser::new(Array[@lexer.Token]) -> Self
 pub fn Parser::parse(Self) -> Array[Stmt]
@@ -201,4 +202,3 @@ pub(all) enum StrPart {
 // Type aliases
 
 // Traits
-
