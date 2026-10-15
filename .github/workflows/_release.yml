@@ -1,38 +1,30 @@
-name: Release
+name: Release (reusable)
 
-# Manually triggered release of one package: bump its version, publish it to npm with
-# Trusted Publishing (OIDC, no NPM_TOKEN), then commit, tag and create a GitHub Release.
-# Every package has its own version and its own tag prefix (see docs/adr/0001-monorepo.md):
-#   purus                 -> v1.2.0
-#   linter                -> linter-v1.2.0   (and so on for the other packages)
+# Shared release steps, called by release-<package>.yml. Do not run it directly.
+# One package per call: bump its version, publish it to npm with Trusted Publishing
+# (OIDC, no NPM_TOKEN), then commit, tag and create a GitHub Release.
+# Every package has its own version and tag prefix (docs/adr/0001-monorepo.md):
+#   purus -> v1.2.0     linter -> linter-v1.2.0   (and so on)
 #
-# Requirements (see #13 and #14, docs/release.md):
-#   - npm: a Trusted Publisher for each package, pointing at this workflow and the "release" environment.
-#   - GitHub: the "purus-release" GitHub App, RELEASE_APP_ID (variable) and RELEASE_APP_PRIVATE_KEY
-#     (secret) in the "release" environment, and the app as bypass actor of the rulesets.
+# Requirements (see #13, #14, docs/release.md): npm Trusted Publisher per package pointing at
+# its release-<package>.yml, the release environment with RELEASE_APP_ID / RELEASE_APP_PRIVATE_KEY,
+# and the purus-release app as bypass actor of the rulesets.
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       package:
-        description: "Package to release"
-        type: choice
+        description: "Package to release: purus, linter, prettier-plugin, language-server or mcp"
+        type: string
         required: true
-        default: purus
-        options:
-          - purus
-          - linter
-          - prettier-plugin
-          - language-server
-          - mcp
       version:
         description: "Version to release: a semver bump (patch/minor/major/prerelease) or an explicit version (e.g. 1.2.0 or 1.2.0-beta.0)"
+        type: string
         required: true
-        default: patch
       dist_tag:
-        description: 'npm dist-tag. Leave empty to auto-detect: the prerelease identifier (e.g. "beta" from 1.2.0-beta.0), or "latest".'
+        description: 'npm dist-tag. Empty = auto-detect: the prerelease identifier (e.g. beta from 1.2.0-beta.0), or latest.'
+        type: string
         required: false
         default: ""
-
 permissions:
   contents: read
 

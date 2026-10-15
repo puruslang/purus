@@ -5,7 +5,7 @@ description: Cut a release of the purus npm package with the manual release work
 
 # Releasing Purus
 
-The release is a manually triggered GitHub Actions workflow (`.github/workflows/release.yml`). It releases one package at a time (`purus`, `linter`, `prettier-plugin`, `language-server`, `mcp`), each with its own version and tag prefix (`v1.2.0` for the compiler, `linter-v1.2.0` for the others). Do not publish from a laptop and do not push `v*` tags by hand.
+Each package has its own manually triggered workflow (`.github/workflows/release-<package>.yml` for `purus`, `linter`, `prettier-plugin`, `language-server`, `mcp`); the shared steps live in `.github/workflows/_release.yml`. Versions and tag prefixes are independent per package (`v1.2.0` for the compiler, `linter-v1.2.0` for the others). Do not publish from a laptop and do not push `v*` tags by hand.
 
 ## Before triggering
 
@@ -16,8 +16,8 @@ The release is a manually triggered GitHub Actions workflow (`.github/workflows/
 ## Trigger
 
 ```sh
-gh workflow run release.yml -R puruslang/purus -f package=purus -f version=patch      # or minor, major, 1.2.0
-gh workflow run release.yml -R puruslang/purus -f package=linter -f version=1.2.0-beta.0   # dist-tag "beta" is detected
+gh workflow run release-purus.yml -R puruslang/purus -f version=patch      # or minor, major, 1.2.0
+gh workflow run release-linter.yml -R puruslang/purus -f version=1.2.0-beta.0   # dist-tag "beta" is detected
 gh run watch -R puruslang/purus
 ```
 
