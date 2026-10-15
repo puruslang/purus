@@ -1,0 +1,23 @@
+{
+  "name": "purus-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the Purus programming language",
+  "main": "dist/index.js",
+  "bin": {
+    "purus-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "purus": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}
