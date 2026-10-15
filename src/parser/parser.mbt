@@ -49,7 +49,11 @@ fn Parser::expect(self : Parser, expected : @lexer.TokenKind) -> Unit {
   let got = self.advance()
   if got != expected {
     self.errors.push(
-      at + ": expected " + expected.to_string() + " but found " + got.to_string(),
+      at +
+      ": expected " +
+      expected.to_string() +
+      " but found " +
+      got.to_string(),
     )
   }
 }
