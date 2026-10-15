@@ -16,7 +16,7 @@ Move the language-agnostic TypeScript/JavaScript tooling into `puruslang/purus` 
 |---|---|
 | `@puruslang/linter` | `packages/linter` |
 | `@puruslang/prettier-plugin-purus` | `packages/prettier-plugin` |
-| language server (new, written in this repository) `@puruslang/language-server` | `packages/language-server` |
+| language server (new, written in this repository) `@puruslang/lsp` | `packages/lsp` |
 | MCP server (new, written in this repository) `@puruslang/mcp` | `packages/mcp` |
 
 Keep these as separate repositories: `docs`, `playground`, `assets`, `.github`, `get-started`, and every editor integration (`vscode-extension`, the future `vim-purus` and `tree-sitter-purus`). Editor integrations consume the monorepo through published npm packages. Plugin managers, nvim-treesitter, Linguist and the Marketplace expect a repository root, and editor release cadence differs from the compiler's.
@@ -25,7 +25,7 @@ The compiler stays at the repository root for now. Moving it to `compiler/` chan
 
 ## Third-party code
 
-The existing purus-lsp and purus-mcp packages are third-party (not owned by this project, and without a license upstream). They are not imported, forked into this repository or published under their npm names. The language server and the MCP server are written from scratch as @puruslang/language-server and @puruslang/mcp (issues #20 and #21), without copying code from those projects.
+The existing `purus-lsp` and `purus-mcp` packages are third-party (not owned by this project, and without a license upstream). They are not imported, forked into this repository or published under their npm names. The language server and the MCP server are written from scratch as `@puruslang/lsp` and `@puruslang/mcp` (issues #20 and #21), without copying code from those projects.
 
 ## Rules
 
