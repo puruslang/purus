@@ -505,10 +505,23 @@ fn Parser::parse_var_decl(self : Parser, kind : DeclKind) -> Stmt {
 
 ///|
 fn Parser::skip_type_annotation(self : Parser) -> Unit {
-  // Skip type tokens until we hit 'be' or newline
+  // Skip type tokens until 'be', 'to', ';', 'gives' or a line end, ignoring
+  // anything inside brackets (e.g. `Array[Number]`)
+  let mut depth = 0
   while self.pos < self.tokens.length() {
     match self.peek() {
-      Be | Newline | Eof => break
+      LBracket => {
+        depth += 1
+        self.pos += 1
+      }
+      RBracket =>
+        if depth == 0 {
+          break
+        } else {
+          depth -= 1
+          self.pos += 1
+        }
+      Be | To | Gives | Semicolon | Newline | Eof if depth == 0 => break
       _ => self.pos += 1
     }
   }
@@ -556,13 +569,7 @@ fn Parser::parse_param_list(self : Parser) -> Array[String] {
         // Optional type annotation: of TYPE
         if self.peek() == Of {
           self.pos += 1
-          // Skip type name
-          while self.pos < self.tokens.length() {
-            match self.peek() {
-              Semicolon | Newline | Eof | To | Gives | Ident(_) => break
-              _ => self.pos += 1
-            }
-          }
+          self.skip_type_annotation()
         }
         // ; separates params
         if self.peek() == Semicolon {
