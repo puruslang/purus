@@ -4,6 +4,21 @@ Purus の構文・仕様・予約語に関する変更履歴です。
 
 ---
 
+## v1.2.0 (2026/10/16)
+
+### Bug Fixes
+
+- **型付きパラメータ**: `fn m a of Number to return a` で型名が関数本体に漏れ、ファイルの残りが関数に取り込まれる問題を修正しました。`skip_type_annotation` は `to` でも止まります。
+- **`require[...]`**: `const fs be require[///fs///]` が `undefined("fs")` ではなく `require("fs")` にコンパイルされます(CommonJS、RFC 10.8)。
+- **構文エラー**: 期待するトークンが無い場合(例: `else` の無い `if ... then`)に、黙ってコンパイルされず `line:col: expected X but found Y` と報告されます。
+
+### Changes
+
+- npm パッケージを TypeScript で書き直し、tsdown でビルドします。ESM と CommonJS の入口、型定義の自動生成、`exports` マップ、`type: module` に対応しました。標準ライブラリは `stdlib/*.cjs` に移動しました。`purus/pkg/...` への深いインポートは使えなくなります。`import "purus"`、`require("purus")`、`purus` コマンドは変わりません。
+- `purus build` と `purus run` が `.cpurus` と `--type commonjs` を正しく扱います(解決したモジュール種別が誤ったオプション名で渡されて無視されていました)。
+- リリース手順を、npm Trusted Publishing と provenance を使う手動実行のワークフローに変更しました。
+
+---
 ## v0.11.0 (2026/06/26)
 
 ### New Features

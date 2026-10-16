@@ -4,6 +4,15 @@
 
 ---
 
+## v1.1.0 (2026/10/16)
+
+### Changes
+
+- TypeScript で書き直し、tsdown でビルドします。ESM と CommonJS の入口、型定義(`formatPurus`、`languages`、`parsers`、`printers`)、`exports` マップに対応しました。`main` は `src/index.js` から `dist/index.cjs` に変わります。`src/` への深いインポートは使えなくなります。
+- Purus のモノレポ(puruslang/purus の `packages/prettier-plugin`)に移動しました。
+- 未使用の内部コードを削除しました。
+
+---
 ## v1.0.1 (2026-06-26)
 
 ### バグ修正

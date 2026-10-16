@@ -4,6 +4,21 @@ Change history for Purus syntax, specifications, and reserved keywords.
 
 ---
 
+## v1.2.0 (2026-10-16)
+
+### Bug Fixes
+
+- **Typed parameters**: `fn m a of Number to return a` no longer leaks the type name into the function body (the rest of the file used to be swallowed by the function). `skip_type_annotation` now also stops at `to`.
+- **`require[...]`**: `const fs be require[///fs///]` compiles to `require("fs")` instead of `undefined("fs")` (CommonJS, RFC 10.8).
+- **Syntax errors**: a missing expected token (for example `if ... then` without `else`) is now reported as `line:col: expected X but found Y` instead of compiling silently.
+
+### Changes
+
+- The npm package is now written in TypeScript and built with tsdown: ESM and CommonJS entry points with generated type declarations, `exports` map, `type: module`. The standard library moved to `stdlib/*.cjs`. Deep imports into `purus/pkg/...` no longer exist; `import "purus"`, `require("purus")` and the `purus` command are unchanged.
+- `purus build` and `purus run` honour `.cpurus` and `--type commonjs` (the resolved module type was passed under a wrong option name and ignored).
+- Release process: manual workflow with npm Trusted Publishing and provenance.
+
+---
 ## v0.11.0 (2026-06-26)
 
 ### New Features
