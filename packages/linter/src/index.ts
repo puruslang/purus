@@ -466,6 +466,11 @@ export const defaultRules: Rules = {
     message:
       "Bare identifier assignment is not supported; use 'const x be ...' or 'let x be ...' instead",
   },
+  "expression-body-no-return": {
+    severity: "warn",
+    message:
+      "An expression body does not return its value; write `to return <expr>`",
+  },
   "no-nil": { severity: "warn", message: "Use 'null' instead of 'nil'" },
   "no-function": {
     severity: "warn",
@@ -578,6 +583,55 @@ export function lint(source: string, ruleOverrides: Rules = {}): Diagnostic[] {
       report("no-var", tok.line, tok.col, rules["no-var"].message);
     }
 
+    // expression-body-no-return: `fn name args to expr` (named fn or getter)
+    // compiles to a statement, not a return. Anonymous `fn x to expr` returns.
+    if (
+      rules["expression-body-no-return"]?.severity !== "off" &&
+      tok.type === "keyword" &&
+      tok.value === "fn"
+    ) {
+      let p = i - 1;
+      while (p >= 0 && tokens[p].type === "whitespace") p--;
+      const prev = p >= 0 ? tokens[p] : null;
+      const statementLevel =
+        !prev ||
+        prev.type === "newline" ||
+        (prev.type === "keyword" &&
+          [
+            "async",
+            "public",
+            "export",
+            "static",
+            "get",
+            "set",
+            "default",
+            "private",
+          ].includes(prev.value));
+      if (statementLevel) {
+        let j = i + 1;
+        while (j < tokens.length && tokens[j].type !== "newline") {
+          if (tokens[j].type === "keyword" && tokens[j].value === "to") break;
+          j++;
+        }
+        if (j < tokens.length && tokens[j].type === "keyword") {
+          let k = j + 1;
+          while (k < tokens.length && tokens[k].type === "whitespace") k++;
+          const next = k < tokens.length ? tokens[k] : null;
+          if (
+            next &&
+            next.type !== "newline" &&
+            !(next.type === "keyword" && next.value === "return")
+          ) {
+            report(
+              "expression-body-no-return",
+              tokens[j].line,
+              tokens[j].col,
+              rules["expression-body-no-return"].message
+            );
+          }
+        }
+      }
+    }
     // no-nil
     if (
       rules["no-nil"]?.severity !== "off" &&

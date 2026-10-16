@@ -66,4 +66,32 @@ describe("lint()", () => {
     const diags = lint("const s be //;hello;//");
     expect(diags.filter((d) => d.severity === "error")).toHaveLength(0);
   });
+
+  it("warns when a named fn expression body has no return (expression-body-no-return)", () => {
+    expect(
+      lint("fn double x to x mul 2").some(
+        (d) => d.rule === "expression-body-no-return"
+      )
+    ).toBe(true);
+    expect(
+      lint("class A\n  get fn v to this.c").some(
+        (d) => d.rule === "expression-body-no-return"
+      )
+    ).toBe(true);
+    expect(
+      lint("fn double x to return x mul 2").some(
+        (d) => d.rule === "expression-body-no-return"
+      )
+    ).toBe(false);
+    expect(
+      lint("const f be fn x to x mul 2").some(
+        (d) => d.rule === "expression-body-no-return"
+      )
+    ).toBe(false);
+    expect(
+      lint("fn greet name\n  console.log[name]").some(
+        (d) => d.rule === "expression-body-no-return"
+      )
+    ).toBe(false);
+  });
 });

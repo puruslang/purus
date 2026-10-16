@@ -11,7 +11,7 @@ const src = path.join(
   root,
   "_build",
   "js",
-  "debug",
+  "release",
   "build",
   "src",
   "cmd",
