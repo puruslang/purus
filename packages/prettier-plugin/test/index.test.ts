@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import pluginModule from "../src/index.js";
-const { formatPurus } = pluginModule;
+import { formatPurus } from "../src/index.js";
 
 describe("formatPurus()", () => {
   it("normalizes indentation to 2 spaces", () => {
@@ -39,7 +38,9 @@ describe("formatPurus()", () => {
   });
 
   it("respects tabWidth option", () => {
-    const result = formatPurus("fn greet name\n  console.log[name]", { tabWidth: 4 });
+    const result = formatPurus("fn greet name\n  console.log[name]", {
+      tabWidth: 4,
+    });
     expect(result).toContain("    console.log[name]");
   });
 });

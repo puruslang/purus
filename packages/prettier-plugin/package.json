@@ -3,7 +3,30 @@
   "version": "1.0.1",
   "description": "Prettier plugin for the Purus language",
   "license": "Apache-2.0",
-  "main": "src/index.js",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
   "keywords": [
     "prettier",
     "plugin",
@@ -13,12 +36,6 @@
     "language",
     "noshift"
   ],
-  "scripts": {
-    "test": "vitest run"
-  },
-  "peerDependencies": {
-    "prettier": "^3.0.0"
-  },
   "author": "otoneko. (https://github.com/otnc)",
   "homepage": "https://purus.work",
   "repository": {
@@ -35,7 +52,11 @@
   "engines": {
     "node": ">=22"
   },
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
   "devDependencies": {
+    "prettier": "^3.8.1",
     "vitest": "^5.0.3"
   }
 }

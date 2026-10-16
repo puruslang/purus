@@ -1,36 +1,134 @@
-"use strict";
+import type { Parser, Printer, SupportLanguage } from "prettier";
 
+type TokenType =
+  | "shebang"
+  | "newline"
+  | "whitespace"
+  | "block-comment"
+  | "comment"
+  | "string"
+  | "punct"
+  | "keyword"
+  | "ident"
+  | "number"
+  | "regex"
+  | "other";
+
+interface Token {
+  type: TokenType;
+  value: string;
+}
+
+export interface FormatOptions {
+  tabWidth?: number;
+  useTabs?: boolean;
+}
+
+interface PurusRoot {
+  type: "purus-root";
+  body: string;
+}
 const KEYWORDS = new Set([
-  "const", "let", "var", "be",
-  "fn", "async", "return", "to", "gives",
-  "if", "elif", "else", "unless", "then",
-  "while", "until", "do", "for", "in", "range",
-  "match", "when", "switch", "case",
-  "try", "catch", "finally", "throw",
-  "import", "from", "export", "default", "require", "use", "namespace", "public", "all", "with",
-  "add", "sub", "mul", "div", "fdiv", "mod", "neg", "pow",
-  "eq", "neq", "lt", "gt", "le", "ge",
-  "and", "or", "not", "pipe", "coal",
-  "band", "bor", "bxor", "bnot", "shl", "shr", "ushr",
-  "as", "of", "typeof", "instanceof", "type",
-  "new", "delete", "this", "await", "yield", "void",
-  "class", "extends", "super", "static", "private", "protected", "get", "set",
-  "true", "false", "null", "nil", "undefined", "nan", "infinity",
-  "break", "continue",
-  "list", "object",
+  "const",
+  "let",
+  "var",
+  "be",
+  "fn",
+  "async",
+  "return",
+  "to",
+  "gives",
+  "if",
+  "elif",
+  "else",
+  "unless",
+  "then",
+  "while",
+  "until",
+  "do",
+  "for",
+  "in",
+  "range",
+  "match",
+  "when",
+  "switch",
+  "case",
+  "try",
+  "catch",
+  "finally",
+  "throw",
+  "import",
+  "from",
+  "export",
+  "default",
+  "require",
+  "use",
+  "namespace",
+  "public",
+  "all",
+  "with",
+  "add",
+  "sub",
+  "mul",
+  "div",
+  "fdiv",
+  "mod",
+  "neg",
+  "pow",
+  "eq",
+  "neq",
+  "lt",
+  "gt",
+  "le",
+  "ge",
+  "and",
+  "or",
+  "not",
+  "pipe",
+  "coal",
+  "band",
+  "bor",
+  "bxor",
+  "bnot",
+  "shl",
+  "shr",
+  "ushr",
+  "as",
+  "of",
+  "typeof",
+  "instanceof",
+  "type",
+  "new",
+  "delete",
+  "this",
+  "await",
+  "yield",
+  "void",
+  "class",
+  "extends",
+  "super",
+  "static",
+  "private",
+  "protected",
+  "get",
+  "set",
+  "true",
+  "false",
+  "null",
+  "nil",
+  "undefined",
+  "nan",
+  "infinity",
+  "break",
+  "continue",
+  "list",
+  "object",
   "function",
   "blank",
 ]);
 
-const BLOCK_STARTERS = new Set([
-  "fn", "if", "elif", "else", "unless",
-  "while", "until", "do", "for",
-  "match", "when", "switch", "case",
-  "try", "catch", "finally", "class",
-]);
-
-function tokenize(source) {
-  const tokens = [];
+function tokenize(source: string): Token[] {
+  const tokens: Token[] = [];
   let i = 0;
   const len = source.length;
 
@@ -59,7 +157,7 @@ function tokenize(source) {
 
     // Whitespace (not newline)
     if (source[i] === " " || source[i] === "\t") {
-      let start = i;
+      const start = i;
       while (i < len && (source[i] === " " || source[i] === "\t")) i++;
       tokens.push({ type: "whitespace", value: source.slice(start, i) });
       continue;
@@ -92,7 +190,11 @@ function tokenize(source) {
           j += 2;
           continue;
         }
-        if (source[j] === "/" && source[j + 1] === "/" && source[j + 2] === "/") {
+        if (
+          source[j] === "/" &&
+          source[j + 1] === "/" &&
+          source[j + 2] === "/"
+        ) {
           j += 3;
           break;
         }
@@ -107,8 +209,18 @@ function tokenize(source) {
     if (source[i] === "/" && source[i + 1] === "/" && source[i + 2] === ";") {
       let j = i + 3;
       while (j < len) {
-        if (source[j] === "\\" && j + 1 < len) { j += 2; continue; }
-        if (source[j] === ";" && source[j + 1] === "/" && source[j + 2] === "/") { j += 3; break; }
+        if (source[j] === "\\" && j + 1 < len) {
+          j += 2;
+          continue;
+        }
+        if (
+          source[j] === ";" &&
+          source[j + 1] === "/" &&
+          source[j + 2] === "/"
+        ) {
+          j += 3;
+          break;
+        }
         j++;
       }
       tokens.push({ type: "string", value: source.slice(i, j) });
@@ -146,31 +258,51 @@ function tokenize(source) {
 
     // Word (identifier or keyword)
     if (/[a-zA-Z_]/.test(source[i])) {
-      let start = i;
+      const start = i;
       while (i < len && /[a-zA-Z0-9_-]/.test(source[i])) i++;
       const word = source.slice(start, i);
-      tokens.push({ type: KEYWORDS.has(word) ? "keyword" : "ident", value: word });
+      tokens.push({
+        type: KEYWORDS.has(word) ? "keyword" : "ident",
+        value: word,
+      });
       continue;
     }
 
     // Number (decimal, 0b binary, 0x hex, BigInt n-suffix)
     if (/[0-9]/.test(source[i])) {
-      let start = i;
-      if (source[i] === "0" && i + 1 < len && (source[i + 1] === "b" || source[i + 1] === "B")) {
+      const start = i;
+      if (
+        source[i] === "0" &&
+        i + 1 < len &&
+        (source[i + 1] === "b" || source[i + 1] === "B")
+      ) {
         i += 2;
         while (i < len && /[01]/.test(source[i])) i++;
-      } else if (source[i] === "0" && i + 1 < len && (source[i + 1] === "x" || source[i + 1] === "X")) {
+      } else if (
+        source[i] === "0" &&
+        i + 1 < len &&
+        (source[i + 1] === "x" || source[i + 1] === "X")
+      ) {
         i += 2;
         while (i < len && /[0-9a-fA-F]/.test(source[i])) i++;
       } else {
         while (i < len && /[0-9]/.test(source[i])) i++;
-        if (i < len && source[i] === "." && i + 1 < len && /[0-9]/.test(source[i + 1])) {
+        if (
+          i < len &&
+          source[i] === "." &&
+          i + 1 < len &&
+          /[0-9]/.test(source[i + 1])
+        ) {
           i++;
           while (i < len && /[0-9]/.test(source[i])) i++;
         }
       }
       // BigInt suffix: n
-      if (i < len && source[i] === "n" && (i + 1 >= len || !/[a-zA-Z0-9_]/.test(source[i + 1]))) {
+      if (
+        i < len &&
+        source[i] === "n" &&
+        (i + 1 >= len || !/[a-zA-Z0-9_]/.test(source[i + 1]))
+      ) {
         i++;
       }
       tokens.push({ type: "number", value: source.slice(start, i) });
@@ -201,9 +333,9 @@ function tokenize(source) {
   return tokens;
 }
 
-function parseLinesFromTokens(tokens) {
-  const lines = [];
-  let current = [];
+function parseLinesFromTokens(tokens: Token[]): Token[][] {
+  const lines: Token[][] = [];
+  let current: Token[] = [];
 
   for (const tok of tokens) {
     if (tok.type === "newline") {
@@ -217,7 +349,7 @@ function parseLinesFromTokens(tokens) {
   return lines;
 }
 
-function getLineIndent(lineTokens) {
+function getLineIndent(lineTokens: Token[]): number {
   if (lineTokens.length === 0) return 0;
   if (lineTokens[0].type === "whitespace") {
     let count = 0;
@@ -229,17 +361,8 @@ function getLineIndent(lineTokens) {
   return 0;
 }
 
-function getFirstWord(lineTokens) {
-  for (const tok of lineTokens) {
-    if (tok.type === "whitespace") continue;
-    if (tok.type === "keyword" || tok.type === "ident") return tok.value;
-    return null;
-  }
-  return null;
-}
-
-function isEmptyLine(lineTokens) {
-  return lineTokens.every(t => t.type === "whitespace");
+function isEmptyLine(lineTokens: Token[]): boolean {
+  return lineTokens.every((t) => t.type === "whitespace");
 }
 
 /**
@@ -247,7 +370,10 @@ function isEmptyLine(lineTokens) {
  * Postfix: (ident | ] | number) \ (add|sub keyword)  → x\add, x\sub
  * Prefix:  (add|sub keyword) \ ident                 → add\x, sub\x
  */
-function isIncrDecrSlash(content, ti) {
+function isIncrDecrSlash(
+  content: Token[],
+  ti: number
+): "postfix" | "prefix" | null {
   if (content[ti].value !== "\\") return null;
   let ni = ti + 1;
   while (ni < content.length && content[ni].type === "whitespace") ni++;
@@ -255,12 +381,25 @@ function isIncrDecrSlash(content, ti) {
   while (pi >= 0 && content[pi].type === "whitespace") pi--;
   const nextTok = ni < content.length ? content[ni] : null;
   const prevTok = pi >= 0 ? content[pi] : null;
-  if (nextTok && nextTok.type === "keyword" && (nextTok.value === "add" || nextTok.value === "sub")) {
-    if (prevTok && (prevTok.type === "ident" || prevTok.value === "]" || prevTok.type === "number")) {
+  if (
+    nextTok &&
+    nextTok.type === "keyword" &&
+    (nextTok.value === "add" || nextTok.value === "sub")
+  ) {
+    if (
+      prevTok &&
+      (prevTok.type === "ident" ||
+        prevTok.value === "]" ||
+        prevTok.type === "number")
+    ) {
       return "postfix";
     }
   }
-  if (prevTok && prevTok.type === "keyword" && (prevTok.value === "add" || prevTok.value === "sub")) {
+  if (
+    prevTok &&
+    prevTok.type === "keyword" &&
+    (prevTok.value === "add" || prevTok.value === "sub")
+  ) {
     if (nextTok && nextTok.type === "ident") {
       return "prefix";
     }
@@ -268,7 +407,10 @@ function isIncrDecrSlash(content, ti) {
   return null;
 }
 
-function formatPurus(source, options = {}) {
+export function formatPurus(
+  source: string,
+  options: FormatOptions = {}
+): string {
   const indent = options.tabWidth || 2;
   const useTabs = options.useTabs || false;
   const indentStr = useTabs ? "\t" : " ".repeat(indent);
@@ -276,7 +418,7 @@ function formatPurus(source, options = {}) {
   const tokens = tokenize(source);
   const lines = parseLinesFromTokens(tokens);
 
-  const result = [];
+  const result: string[] = [];
 
   for (let li = 0; li < lines.length; li++) {
     const line = lines[li];
@@ -291,10 +433,9 @@ function formatPurus(source, options = {}) {
     const indentLevel = Math.round(origIndent / indent);
 
     // Remove leading whitespace from tokens
-    const contentTokens = line.filter(t => t.type !== "whitespace" || line.indexOf(t) !== 0);
-    // Actually, remove ALL leading whitespace
     let startIdx = 0;
-    while (startIdx < line.length && line[startIdx].type === "whitespace") startIdx++;
+    while (startIdx < line.length && line[startIdx].type === "whitespace")
+      startIdx++;
     const content = line.slice(startIdx);
 
     if (content.length === 0) {
@@ -314,16 +455,35 @@ function formatPurus(source, options = {}) {
         const next = content[ti + 1];
         const prevChar = lineStr.length > 0 ? lineStr[lineStr.length - 1] : "";
         // Suppress space before an incr/decr backslash
-        const nextIsIncrDecrSlash = next && next.value === "\\" && isIncrDecrSlash(content, ti + 1) !== null;
+        const nextIsIncrDecrSlash =
+          next &&
+          next.value === "\\" &&
+          isIncrDecrSlash(content, ti + 1) !== null;
         // Suppress space after an incr/decr backslash
-        let prevIsIncrDecrSlash = false;
-        { let pi = ti - 1; while (pi >= 0 && content[pi].type === "whitespace") pi--;
-          prevIsIncrDecrSlash = pi >= 0 && content[pi].value === "\\" && isIncrDecrSlash(content, pi) !== null; }
-        if (lineStr.length > 0 && next && next.value !== "]" && next.value !== "[" && prevChar !== "[" && !nextIsIncrDecrSlash && !prevIsIncrDecrSlash) {
+        let spaceIdx = ti - 1;
+        while (spaceIdx >= 0 && content[spaceIdx].type === "whitespace")
+          spaceIdx--;
+        const prevIsIncrDecrSlash =
+          spaceIdx >= 0 &&
+          content[spaceIdx].value === "\\" &&
+          isIncrDecrSlash(content, spaceIdx) !== null;
+        if (
+          lineStr.length > 0 &&
+          next &&
+          next.value !== "]" &&
+          next.value !== "[" &&
+          prevChar !== "[" &&
+          !nextIsIncrDecrSlash &&
+          !prevIsIncrDecrSlash
+        ) {
           lineStr += " ";
         }
       } else {
-        if (ti > 0 && content[ti - 1].type !== "whitespace" && lineStr.length > 0) {
+        if (
+          ti > 0 &&
+          content[ti - 1].type !== "whitespace" &&
+          lineStr.length > 0
+        ) {
           // Adjacent non-whitespace tokens - check if space needed
           const prev = lineStr[lineStr.length - 1];
           let suppressSpace = false;
@@ -333,13 +493,20 @@ function formatPurus(source, options = {}) {
             suppressSpace = true; // No space before comma/semicolon
           } else if (tok.value === "[" || tok.value === "]" || prev === "[") {
             suppressSpace = true; // No space around brackets
-          } else if (tok.value === "\\" && isIncrDecrSlash(content, ti) !== null) {
+          } else if (
+            tok.value === "\\" &&
+            isIncrDecrSlash(content, ti) !== null
+          ) {
             suppressSpace = true; // No space before incr/decr backslash
           } else {
             // No space after incr/decr backslash
             let pi = ti - 1;
             while (pi >= 0 && content[pi].type === "whitespace") pi--;
-            if (pi >= 0 && content[pi].value === "\\" && isIncrDecrSlash(content, pi) !== null) {
+            if (
+              pi >= 0 &&
+              content[pi].value === "\\" &&
+              isIncrDecrSlash(content, pi) !== null
+            ) {
               suppressSpace = true;
             }
           }
@@ -350,10 +517,13 @@ function formatPurus(source, options = {}) {
     }
 
     // Ensure space after comma/semicolon — but NOT inside string tokens
-    lineStr = lineStr.replace(/(\/\/;.*?;\/\/|\/\/\/[\s\S]*?\/\/\/)|([,;])(?!\s)/g, (m, str, sep) => {
-      if (str) return str; // preserve string contents unchanged
-      return sep + " ";
-    });
+    lineStr = lineStr.replace(
+      /(\/\/;.*?;\/\/|\/\/\/[\s\S]*?\/\/\/)|([,;])(?!\s)/g,
+      (m, str, sep) => {
+        if (str) return str; // preserve string contents unchanged
+        return sep + " ";
+      }
+    );
 
     // No trailing whitespace
     lineStr = lineStr.trimEnd();
@@ -369,7 +539,7 @@ function formatPurus(source, options = {}) {
 }
 
 // Prettier plugin interface
-const languages = [
+export const languages: SupportLanguage[] = [
   {
     name: "Purus",
     parsers: ["purus"],
@@ -378,21 +548,21 @@ const languages = [
   },
 ];
 
-const parsers = {
+export const parsers: Record<string, Parser<PurusRoot>> = {
   purus: {
-    parse(text) {
+    parse(text: string): PurusRoot {
       return { type: "purus-root", body: text };
     },
     astFormat: "purus-ast",
     locStart: () => 0,
-    locEnd: (node) => (node.body ? node.body.length : 0),
+    locEnd: (node: PurusRoot) => (node.body ? node.body.length : 0),
   },
 };
 
-const printers = {
+export const printers: Record<string, Printer<PurusRoot>> = {
   "purus-ast": {
     print(path, options) {
-      const node = path.getValue();
+      const node = path.node;
       return formatPurus(node.body, {
         tabWidth: options.tabWidth,
         useTabs: options.useTabs,
@@ -400,5 +570,3 @@ const printers = {
     },
   },
 };
-
-module.exports = { languages, parsers, printers, formatPurus };
