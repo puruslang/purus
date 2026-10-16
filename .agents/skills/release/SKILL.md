@@ -21,7 +21,7 @@ gh workflow run release-linter.yml -R puruslang/purus -f version=1.2.0-beta.0   
 gh run watch -R puruslang/purus
 ```
 
-The workflow checks and tests (the compiler also builds with MoonBit), bumps the package version (for the compiler `package.json`, `package-lock.json` and `moon.mod` together), builds, verifies a push dry run as the bot, publishes with provenance, pushes the release commit and tag as `purus-release[bot]`, and creates the GitHub Release.
+The workflow checks and tests (the compiler also builds with MoonBit), bumps the package version (for the compiler `package.json` and `moon.mod` together), builds, verifies a push dry run as the bot, publishes with provenance, pushes the release commit and tag as `purus-release[bot]`, and creates the GitHub Release.
 
 ## After
 

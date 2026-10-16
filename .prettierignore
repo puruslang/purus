@@ -4,7 +4,7 @@ node_modules
 _build
 .mooncakes
 pkg/lib/purus-compiler.js
-package-lock.json
+pnpm-lock.yaml
 *.mbt
 *.mbti
 moon.mod

@@ -55,13 +55,15 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           persist-credentials: true
 
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
-          cache: npm
+          cache: pnpm
 
-      # Trusted Publishing needs npm >= 11 (also fixes workspace resolution).
+      # Dependencies are installed with pnpm; publishing uses the npm CLI because Trusted Publishing (OIDC) is an npm feature and needs npm >= 11.
       - run: npm install -g npm@11
 
       - name: Resolve package
@@ -86,7 +88,7 @@ jobs:
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "tag_prefix=$TAG_PREFIX" >> "$GITHUB_OUTPUT"
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Install MoonBit (compiler only)
         if: inputs.package == 'purus'
@@ -106,8 +108,8 @@ jobs:
         env:
           NAME: ${{ steps.pkg.outputs.name }}
         run: |
-          npm test -w "$NAME" --if-present
-          npm run build -w "$NAME" --if-present
+          pnpm --filter "$NAME" --if-present run test
+          pnpm --filter "$NAME" --if-present run build
 
       - name: Bump version
         id: bump
@@ -123,7 +125,7 @@ jobs:
             npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
             node scripts/sync-version.ts
           else
-            npm version "$VERSION_INPUT" -w "$NAME" --no-git-tag-version --allow-same-version >/dev/null
+            (cd "$DIR" && npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null)
           fi
           NEW="$(node -p "require('./$DIR/package.json').version")"
           echo "version=${NEW}" >> "$GITHUB_OUTPUT"
@@ -152,7 +154,7 @@ jobs:
 
       - name: Build (compiler)
         if: inputs.package == 'purus'
-        run: npm run build
+        run: pnpm run build
 
       - name: Verify package (compiler)
         if: inputs.package == 'purus'
@@ -172,7 +174,7 @@ jobs:
           git config user.name "${APP_SLUG}[bot]"
           git config user.email "${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
           if [ "$CHANGED" = "true" ]; then
-            git add "$DIR/package.json" package-lock.json
+            git add "$DIR/package.json"
             if [ "$PACKAGE" = "purus" ]; then git add moon.mod; fi
             git commit -m "release($PACKAGE): v${VERSION}"
           fi
@@ -193,7 +195,7 @@ jobs:
           if [ "$DIR" = "." ]; then
             npm publish --access public --provenance --tag "$NPM_TAG"
           else
-            npm publish -w "$NAME" --access public --provenance --tag "$NPM_TAG"
+            (cd "$DIR" && npm publish --access public --provenance --tag "$NPM_TAG")
           fi
 
       - name: Push commit and tag

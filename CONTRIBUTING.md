@@ -24,6 +24,7 @@ puruslang/purus
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 22
+- [pnpm](https://pnpm.io/) (the version is pinned in `packageManager`; `corepack enable` works)
 - [MoonBit](https://www.moonbitlang.com/)
 - [Git](https://git-scm.com/)
 
@@ -34,7 +35,8 @@ git clone https://github.com/puruslang/purus.git
 cd purus
 moon update        # install MoonBit dependencies
 moon build --target js
-npm run build
+pnpm install
+pnpm run build
 ```
 
 ## Development
@@ -43,8 +45,8 @@ npm run build
 |---|---|
 | `moon test` | Run all tests |
 | `moon check` | Type check |
-| `npm run build` | Full build (compile + copy) |
-| `npm run sync` | Sync version to moon.mod |
+| `pnpm run build` | Full build (compile + copy) |
+| `pnpm run sync` | Sync version to moon.mod |
 
 ## Submitting Pull Requests
 

@@ -26,8 +26,10 @@ Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate
 ```sh
 moon check                 # type check, must have 0 errors and 0 warnings
 moon test --target js      # all tests (needs Node on PATH)
+pnpm install               # dependencies (pnpm workspace: root, packages/linter, packages/prettier-plugin)
+pnpm run test:ts           # wrapper tests (needs pnpm run build first); pnpm run test:packages for the packages
 moon info                  # regenerate pkg.generated.mbti; review the diff
-npm run build              # moon build --target js + tsdown + copy the compiler to dist/
+pnpm run build             # moon build --target js + tsdown + copy the compiler to dist/
 node dist/cli.cjs build --stdout file.purus   # inspect generated JS
 ```
 

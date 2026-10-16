@@ -30,21 +30,22 @@
     "test": "moon test --target js",
     "build:compiler": "moon build --target js",
     "build:copy": "node scripts/build.ts",
-    "build": "npm run build:compiler && npm run build:ts && npm run build:copy",
+    "build": "pnpm run build:compiler && pnpm run build:ts && pnpm run build:copy",
     "lint": "moon check",
     "lint:fix": "moon fmt",
     "format": "moon fmt && prettier --write ts scripts test",
     "format:check": "moon fmt --check && prettier --check ts scripts test",
     "typecheck": "moon check",
-    "check": "npm run lint && npm run format:check && npm run build && npm run typecheck",
+    "check": "pnpm run lint && pnpm run format:check && pnpm run build && pnpm run typecheck",
     "sync": "node scripts/sync-version.ts",
-    "prepublishOnly": "npm run sync && npm run build",
-    "typecheck:ts": "tsc --noEmit && npm run typecheck --workspaces --if-present",
+    "prepublishOnly": "pnpm run sync && pnpm run build",
+    "typecheck:ts": "tsc --noEmit && pnpm --filter \"./packages/*\" --if-present run typecheck",
     "lint:ts": "eslint ts scripts test packages",
     "format:check:ts": "prettier --check ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
     "format:ts": "prettier --write ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
     "build:ts": "tsdown",
-    "test:ts": "vitest run"
+    "test:ts": "vitest run",
+    "test:packages": "pnpm --filter \"./packages/*\" --if-present run test"
   },
   "keywords": [
     "compiler",
@@ -69,9 +70,6 @@
     "url": "https://github.com/sponsors/otnc"
   },
   "homepage": "https://purus.work",
-  "workspaces": [
-    "packages/*"
-  ],
   "engines": {
     "node": ">=22"
   },
@@ -85,6 +83,8 @@
     "prettier": "^3.8.1",
     "tsdown": "^0.23.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.2"
-  }
+    "typescript-eslint": "^8.71.2",
+    "vitest": "^5.0.3"
+  },
+  "packageManager": "pnpm@11.22.0"
 }
