@@ -11,15 +11,15 @@ description: Work on the Purus compiler (MoonBit) - add or change syntax, fix le
 src/lexer/    tokens and the lexer (token.mbt, lexer.mbt)
 src/parser/   AST (ast.mbt) and recursive-descent parser (parser.mbt, parser_expr.mbt)
 src/codegen/  JavaScript generation (codegen.mbt, codegen_expr.mbt)
-src/cmd/main/ CLI entry, built to JS and copied into dist/purus-compiler.js
-ts/           npm wrapper (cli.ts, index.ts, commands/, lib/) - TypeScript 6, bundled with tsdown into dist/
-stdlib/       standard library modules (p-*.cjs), read as text by ts/lib/stdlib.ts
-packages/     linter and prettier-plugin (TypeScript workspaces)
+src/cmd/main/ CLI entry, built to JS and copied into packages/purus/dist/purus-compiler.js
+packages/     npm packages (pnpm workspace; the repository root is the private purus-monorepo)
+  purus/      CLI and API (ts/, bundled by tsdown into dist/) and the standard library (stdlib/*.cjs, read as text by ts/lib/stdlib.ts)
+  linter/ prettier-plugin/ lsp/ mcp/
 RFC.md        language specification
 examples/     sample .purus files
 ```
 
-Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate`. The standard library (`p-*`) is not compiled: codegen emits a marker comment and `ts/lib/stdlib.ts` replaces it with code from `stdlib/*.cjs`.
+Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate`. The standard library (`p-*`) is not compiled: codegen emits a marker comment and `packages/purus/ts/lib/stdlib.ts` replaces it with code from `packages/purus/stdlib/*.cjs`.
 
 ## Commands
 
@@ -27,10 +27,10 @@ Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate
 moon check                 # type check, must have 0 errors and 0 warnings
 moon test --target js      # all tests (needs Node on PATH)
 pnpm install               # dependencies (pnpm workspace: root, packages/linter, packages/prettier-plugin)
-pnpm run test:ts           # wrapper tests (needs pnpm run build first); pnpm run test:packages for the packages
+pnpm run test:packages     # tests of all packages (needs pnpm run build first)
 moon info                  # regenerate pkg.generated.mbti; review the diff
-pnpm run build             # moon build --target js + tsdown + copy the compiler to dist/
-node dist/cli.cjs build --stdout file.purus   # inspect generated JS
+pnpm run build             # moon build --target js + tsdown + copy the compiler to packages/purus/dist/
+node packages/purus/dist/cli.cjs build --stdout file.purus   # inspect generated JS
 ```
 
 Do not run `moon fmt` and commit its output together with a functional change: the formatter of recent toolchains rewrites many files (for example `Int` to `Int32`). Format in a dedicated commit.

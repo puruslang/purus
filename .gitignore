@@ -7,3 +7,6 @@ node_modules/
 dist/
 coverage/
 .private/
+packages/purus/README.md
+packages/purus/README-ja.md
+packages/purus/LICENSE

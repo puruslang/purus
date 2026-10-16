@@ -11,12 +11,6 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.12.0)
-      '@types/node':
-        specifier: ^22.20.5
-        version: 22.20.5
-      '@vitest/coverage-v8':
-        specifier: ^5.0.3
-        version: 5.0.4(vitest@5.0.4)
       eslint:
         specifier: ^10.12.0
         version: 10.12.0
@@ -29,18 +23,12 @@ importers:
       prettier:
         specifier: ^3.8.1
         version: 3.9.10
-      tsdown:
-        specifier: ^0.23.1
-        version: 0.23.1(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
       typescript-eslint:
         specifier: ^8.71.2
         version: 8.71.2(eslint@10.12.0)(typescript@6.0.3)
-      vitest:
-        specifier: ^5.0.3
-        version: 5.0.4(@types/node@22.20.5)(@vitest/coverage-v8@5.0.4)(vite@8.3.4(@types/node@22.20.5))
 
   packages/linter:
     devDependencies:
@@ -70,7 +58,7 @@ importers:
         version: link:../prettier-plugin
       purus:
         specifier: workspace:^
-        version: link:../..
+        version: link:../purus
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1
@@ -104,7 +92,7 @@ importers:
         version: link:../prettier-plugin
       purus:
         specifier: workspace:^
-        version: link:../..
+        version: link:../purus
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -133,6 +121,24 @@ importers:
       prettier:
         specifier: ^3.8.1
         version: 3.9.10
+      tsdown:
+        specifier: ^0.23.1
+        version: 0.23.1(typescript@6.0.3)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.4(@types/node@22.20.5)(@vitest/coverage-v8@5.0.4)(vite@8.3.4(@types/node@22.20.5))
+
+  packages/purus:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.5
+        version: 22.20.5
+      '@vitest/coverage-v8':
+        specifier: ^5.0.3
+        version: 5.0.4(vitest@5.0.4)
       tsdown:
         specifier: ^0.23.1
         version: 0.23.1(typescript@6.0.3)

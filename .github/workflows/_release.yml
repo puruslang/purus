@@ -73,7 +73,7 @@ jobs:
         run: |
           case "$PACKAGE" in
             purus)
-              DIR="."; TAG_PREFIX="v" ;;
+              DIR="packages/purus"; TAG_PREFIX="v" ;;
             linter | prettier-plugin | lsp | mcp)
               DIR="packages/$PACKAGE"; TAG_PREFIX="$PACKAGE-v" ;;
             *)
@@ -105,8 +105,7 @@ jobs:
           moon check
           moon test
 
-      - name: Test and build (workspace package)
-        if: inputs.package != 'purus'
+      - name: Build and test
         env:
           NAME: ${{ steps.pkg.outputs.name }}
         run: |
@@ -122,14 +121,11 @@ jobs:
           DIR: ${{ steps.pkg.outputs.dir }}
           NAME: ${{ steps.pkg.outputs.name }}
           TAG_PREFIX: ${{ steps.pkg.outputs.tag_prefix }}
+          PACKAGE: ${{ inputs.package }}
         run: |
           OLD="$(node -p "require('./$DIR/package.json').version")"
-          if [ "$DIR" = "." ]; then
-            npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
-            node scripts/sync-version.ts
-          else
-            (cd "$DIR" && npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null)
-          fi
+          (cd "$DIR" && npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null)
+          if [ "$PACKAGE" = "purus" ]; then (cd "$DIR" && node scripts/sync-version.ts); fi
           NEW="$(node -p "require('./$DIR/package.json').version")"
           echo "version=${NEW}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG_PREFIX}${NEW}" >> "$GITHUB_OUTPUT"
@@ -161,7 +157,7 @@ jobs:
 
       - name: Verify package (compiler)
         if: inputs.package == 'purus'
-        run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
+        run: node -e "const p = require('./packages/purus'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
 
       - name: Commit and tag (local)
         env:
@@ -195,14 +191,10 @@ jobs:
           NAME: ${{ steps.pkg.outputs.name }}
           NPM_TAG: ${{ steps.bump.outputs.npm_tag }}
         run: |
-          if [ "$DIR" = "." ]; then
-            npm publish --access public --provenance --tag "$NPM_TAG"
-          else
-            # pnpm pack replaces workspace:^ dependencies by real versions; npm publishes the tarball (Trusted Publishing).
-            PACK_DIR="$(mktemp -d)"
-            (cd "$DIR" && pnpm pack --pack-destination "$PACK_DIR" >/dev/null)
-            npm publish "$PACK_DIR"/*.tgz --access public --provenance --tag "$NPM_TAG"
-          fi
+          # pnpm pack replaces workspace:^ dependencies by real versions; npm publishes the tarball (Trusted Publishing).
+          PACK_DIR="$(mktemp -d)"
+          (cd "$DIR" && pnpm pack --pack-destination "$PACK_DIR" >/dev/null)
+          npm publish "$PACK_DIR"/*.tgz --access public --provenance --tag "$NPM_TAG"
 
       - name: Push commit and tag
         env:

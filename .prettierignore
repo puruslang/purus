@@ -13,3 +13,4 @@ examples
 .agents
 skills
 *.md
+packages/purus/stdlib

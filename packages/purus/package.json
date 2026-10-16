@@ -27,26 +27,10 @@
     "README-ja.md"
   ],
   "scripts": {
-    "test": "moon test --target js",
-    "build:compiler": "moon build --target js --release",
-    "build:copy": "node scripts/build.ts",
-    "build": "pnpm run build:compiler && pnpm run build:ts && pnpm run build:copy && pnpm run build:packages",
-    "lint": "moon check",
-    "lint:fix": "moon fmt",
-    "format": "moon fmt && prettier --write ts scripts test",
-    "format:check": "moon fmt --check && prettier --check ts scripts test",
-    "typecheck": "moon check",
-    "check": "pnpm run lint && pnpm run format:check && pnpm run build && pnpm run typecheck",
+    "build": "tsdown && node scripts/build.ts",
     "sync": "node scripts/sync-version.ts",
-    "prepublishOnly": "pnpm run sync && pnpm run build",
-    "typecheck:ts": "tsc --noEmit && pnpm --filter \"./packages/*\" --if-present run typecheck",
-    "lint:ts": "eslint ts scripts test packages",
-    "format:check:ts": "prettier --check ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
-    "format:ts": "prettier --write ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
-    "build:ts": "tsdown",
-    "test:ts": "vitest run",
-    "test:packages": "pnpm --workspace-concurrency=1 --filter \"./packages/*\" --if-present run test",
-    "build:packages": "pnpm --filter \"./packages/*\" --if-present run build"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "compiler",
@@ -62,7 +46,8 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/puruslang/purus"
+    "url": "https://github.com/puruslang/purus",
+    "directory": "packages/purus"
   },
   "bugs": {
     "url": "https://github.com/puruslang/purus/issues"
@@ -75,17 +60,10 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.5",
     "@vitest/coverage-v8": "^5.0.3",
-    "eslint": "^10.12.0",
-    "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.13.0",
-    "prettier": "^3.8.1",
     "tsdown": "^0.23.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.71.2",
     "vitest": "^5.0.3"
-  },
-  "packageManager": "pnpm@11.22.0"
+  }
 }

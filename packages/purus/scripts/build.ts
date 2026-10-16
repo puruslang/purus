@@ -6,9 +6,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const root = path.join(import.meta.dirname, "..");
+const pkgRoot = path.join(import.meta.dirname, "..");
+const repoRoot = path.join(pkgRoot, "..", "..");
 const src = path.join(
-  root,
+  repoRoot,
   "_build",
   "js",
   "release",
@@ -18,7 +19,7 @@ const src = path.join(
   "main",
   "main.js"
 );
-const dest = path.join(root, "dist", "purus-compiler.js");
+const dest = path.join(pkgRoot, "dist", "purus-compiler.js");
 
 if (!fs.existsSync(src)) {
   console.error(
@@ -30,10 +31,15 @@ if (!fs.existsSync(src)) {
 fs.mkdirSync(path.dirname(dest), { recursive: true });
 
 const { version } = JSON.parse(
-  fs.readFileSync(path.join(root, "package.json"), "utf8")
+  fs.readFileSync(path.join(pkgRoot, "package.json"), "utf8")
 ) as { version: string };
 const content = fs
   .readFileSync(src, "utf8")
   .replace(/__PURUS_VERSION__/g, version);
 fs.writeFileSync(dest, content, "utf8");
 console.log(`Copied ${src} -> ${dest} (version: ${version})`);
+
+// README and LICENSE live at the repository root; the npm package ships copies.
+for (const name of ["README.md", "README-ja.md", "LICENSE"]) {
+  fs.copyFileSync(path.join(repoRoot, name), path.join(pkgRoot, name));
+}
