@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-"use strict";
-
-const fs = require("fs");
-const path = require("path");
-const { lint, defaultRules } = require("./index.js");
-const { loadConfig } = require("./config.js");
+import fs from "node:fs";
+import path from "node:path";
+import { lint } from "./index.js";
+import type { Rules, Severity } from "./index.js";
+import { loadConfig } from "./config.js";
 
 const args = process.argv.slice(2);
 
@@ -12,7 +11,9 @@ if (args.includes("--help") || args.includes("-h")) {
   console.log("purus-lint - Linter for the Purus language");
   console.log("");
   console.log("Usage:");
-  console.log("  purus-lint [file|dir...]             Lint specific files or directories");
+  console.log(
+    "  purus-lint [file|dir...]             Lint specific files or directories"
+  );
   console.log("  purus-lint                           Lint using config.purus");
   console.log("");
   console.log("Options:");
@@ -23,8 +24,8 @@ if (args.includes("--help") || args.includes("-h")) {
 }
 
 // Collect files and options
-let configPath = null;
-const inputPaths = [];
+let configPath: string | null = null;
+const inputPaths: string[] = [];
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === "--config" && i + 1 < args.length) {
@@ -35,24 +36,24 @@ for (let i = 0; i < args.length; i++) {
 }
 
 // Load rule overrides
-let ruleOverrides = {};
+let ruleOverrides: Rules = {};
 
 if (configPath) {
   try {
     ruleOverrides = JSON.parse(fs.readFileSync(configPath, "utf8"));
   } catch (err) {
-    console.error(`Error reading config: ${err.message}`);
+    console.error(`Error reading config: ${(err as Error).message}`);
     process.exit(1);
   }
 } else {
   // Try config.purus for lint settings
   const result = loadConfig();
-  if (result && result.config.lint) {
+  if (result && typeof result.config.lint === "object") {
     ruleOverrides = {};
     const lintConfig = result.config.lint;
     for (const [key, value] of Object.entries(lintConfig)) {
       if (typeof value === "string") {
-        ruleOverrides[key] = { severity: value };
+        ruleOverrides[key] = { severity: value as Severity };
       } else if (typeof value === "number") {
         // For numeric values like indent-size, set as the relevant property
         if (key === "indent-size") {
@@ -68,7 +69,7 @@ if (configPath) {
 }
 
 // Determine files to lint
-let filesToLint = [];
+let filesToLint: string[] = [];
 
 for (const p of inputPaths) {
   const resolved = path.resolve(p);
@@ -88,7 +89,12 @@ if (filesToLint.length === 0) {
   // Try config.purus entry
   const result = loadConfig();
   if (result) {
-    const entryDir = path.resolve(result.configDir, result.config.entry || "src");
+    const entryDir = path.resolve(
+      result.configDir,
+      typeof result.config.entry === "string" && result.config.entry
+        ? result.config.entry
+        : "src"
+    );
     if (fs.existsSync(entryDir)) {
       filesToLint = findPurusFiles(entryDir);
     }
@@ -99,7 +105,9 @@ if (filesToLint.length === 0) {
   console.log("purus-lint - Linter for the Purus language");
   console.log("");
   console.log("Usage:");
-  console.log("  purus-lint [file|dir...]             Lint specific files or directories");
+  console.log(
+    "  purus-lint [file|dir...]             Lint specific files or directories"
+  );
   console.log("  purus-lint                           Lint using config.purus");
   process.exit(0);
 }
@@ -107,11 +115,11 @@ if (filesToLint.length === 0) {
 let totalIssues = 0;
 
 for (const file of filesToLint) {
-  let source;
+  let source: string;
   try {
     source = fs.readFileSync(file, "utf8");
   } catch (err) {
-    console.error(`Error: ${err.message}`);
+    console.error(`Error: ${(err as Error).message}`);
     continue;
   }
 
@@ -131,14 +139,17 @@ if (totalIssues > 0) {
   console.log("No issues found.");
 }
 
-function findPurusFiles(dir) {
-  const results = [];
+function findPurusFiles(dir: string): string[] {
+  const results: string[] = [];
   if (!fs.existsSync(dir)) return results;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findPurusFiles(fullPath));
-    } else if (/\.(c|m)?purus$/.test(entry.name) && entry.name !== "config.purus") {
+    } else if (
+      /\.(c|m)?purus$/.test(entry.name) &&
+      entry.name !== "config.purus"
+    ) {
       results.push(fullPath);
     }
   }

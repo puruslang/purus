@@ -1,0 +1,14 @@
+dist
+coverage
+node_modules
+_build
+.mooncakes
+pkg/lib/purus-compiler.js
+package-lock.json
+*.mbt
+*.mbti
+moon.mod
+moon.pkg
+examples
+.agents
+skills

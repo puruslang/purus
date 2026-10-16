@@ -4,3 +4,5 @@ _build/
 .moonagent/
 pkg/lib/purus-compiler.js
 node_modules/
+dist/
+coverage/

@@ -3,12 +3,32 @@
   "version": "1.0.1",
   "description": "Linter for the Purus language",
   "license": "Apache-2.0",
-  "main": "src/index.js",
-  "bin": {
-    "purus-lint": "src/cli.js"
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
   },
+  "bin": {
+    "purus-lint": "dist/cli.cjs"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "vitest run"
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "linter",

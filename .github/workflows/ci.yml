@@ -57,6 +57,12 @@ jobs:
       - name: Test workspace packages
         run: npm test --workspaces --if-present
 
+      - name: TypeScript checks (typecheck, ESLint, Prettier)
+        run: |
+          npm run typecheck:ts
+          npm run lint:ts
+          npm run format:check:ts
+
       - name: Compile examples
         shell: bash
         run: |
