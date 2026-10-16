@@ -6,3 +6,4 @@ pkg/lib/purus-compiler.js
 node_modules/
 dist/
 coverage/
+.private/

@@ -1,12 +1,14 @@
 /**
- * Sync version from package.json to moon.mod
+ * Sync the version from package.json into moon.mod.
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "node:fs";
+import path from "node:path";
 
-const root = path.join(__dirname, "..");
-const version = require(path.join(root, "package.json")).version;
+const root = path.join(import.meta.dirname, "..");
+const { version } = JSON.parse(
+  fs.readFileSync(path.join(root, "package.json"), "utf8")
+) as { version: string };
 
 const moonModPath = path.join(root, "moon.mod");
 const content = fs.readFileSync(moonModPath, "utf8");
@@ -21,7 +23,7 @@ const oldVersion = match[1];
 fs.writeFileSync(
   moonModPath,
   content.replace(versionLine, `version = "${version}"`),
-  "utf8",
+  "utf8"
 );
 
 if (oldVersion !== version) {

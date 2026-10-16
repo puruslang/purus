@@ -11,13 +11,15 @@ description: Work on the Purus compiler (MoonBit) - add or change syntax, fix le
 src/lexer/    tokens and the lexer (token.mbt, lexer.mbt)
 src/parser/   AST (ast.mbt) and recursive-descent parser (parser.mbt, parser_expr.mbt)
 src/codegen/  JavaScript generation (codegen.mbt, codegen_expr.mbt)
-src/cmd/main/ CLI entry, built to JS and copied into pkg/lib/purus-compiler.js
-pkg/          npm wrapper (lib/, stdlib/)  - hand-written JavaScript
+src/cmd/main/ CLI entry, built to JS and copied into dist/purus-compiler.js
+ts/           npm wrapper (cli.ts, index.ts, commands/, lib/) - TypeScript 6, bundled with tsdown into dist/
+stdlib/       standard library modules (p-*.cjs), read as text by ts/lib/stdlib.ts
+packages/     linter and prettier-plugin (TypeScript workspaces)
 RFC.md        language specification
 examples/     sample .purus files
 ```
 
-Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate`. The standard library (`p-*`) is not compiled: codegen emits a marker comment and `pkg/lib/stdlib.js` replaces it with code from `pkg/stdlib/*.js`.
+Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate`. The standard library (`p-*`) is not compiled: codegen emits a marker comment and `ts/lib/stdlib.ts` replaces it with code from `stdlib/*.cjs`.
 
 ## Commands
 
@@ -25,8 +27,8 @@ Pipeline: source -> `Lexer::tokenize` -> `Parser::parse` -> `JsCodegen::generate
 moon check                 # type check, must have 0 errors and 0 warnings
 moon test --target js      # all tests (needs Node on PATH)
 moon info                  # regenerate pkg.generated.mbti; review the diff
-npm run build              # moon build --target js + copy to pkg/lib
-node bin/purus.js build --stdout file.purus   # inspect generated JS
+npm run build              # moon build --target js + tsdown + copy the compiler to dist/
+node dist/cli.cjs build --stdout file.purus   # inspect generated JS
 ```
 
 Do not run `moon fmt` and commit its output together with a functional change: the formatter of recent toolchains rewrites many files (for example `Int` to `Int32`). Format in a dedicated commit.
@@ -46,5 +48,5 @@ Do not run `moon fmt` and commit its output together with a functional change: t
 - Test sources are Purus strings inside MoonBit: escape backslashes (`\\.` for the optional dot).
 - Keywords are reserved: a test function named `add` or `range` will not parse as a name.
 - `fn x to expr` does not return the value; tests that need a return use `to return expr` (see issue #60).
-- The generated `pkg/lib/purus-compiler.js` and `_build/` are build outputs; never edit them.
+- The generated `dist/` and `_build/` are build outputs; never edit them.
 - On Windows PowerShell, Node may be missing from PATH (fnm); run `fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression` first.

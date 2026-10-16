@@ -1,11 +1,21 @@
-"use strict";
+import fs from "node:fs";
+import path from "node:path";
 
-const fs = require("fs");
-const path = require("path");
+export type ConfigValue = string | number | boolean | ConfigObject;
 
-function parseConfig(configPath) {
+export interface ConfigObject {
+  [key: string]: ConfigValue;
+}
+
+export interface LoadedConfig {
+  config: ConfigObject;
+  configPath: string;
+  configDir: string;
+}
+
+export function parseConfig(configPath: string): ConfigObject {
   const content = fs.readFileSync(configPath, "utf8");
-  const config = {};
+  const config: ConfigObject = {};
 
   for (const line of content.split("\n")) {
     const trimmed = line.trim();
@@ -15,7 +25,7 @@ function parseConfig(configPath) {
     if (!match) continue;
 
     const key = match[1];
-    let value = match[2].trim();
+    let value: ConfigValue = match[2].trim();
 
     if (value.startsWith("///") && value.endsWith("///")) {
       value = value.slice(3, -3);
@@ -35,7 +45,7 @@ function parseConfig(configPath) {
       if (!target[keys[i]] || typeof target[keys[i]] !== "object") {
         target[keys[i]] = {};
       }
-      target = target[keys[i]];
+      target = target[keys[i]] as ConfigObject;
     }
     target[keys[keys.length - 1]] = value;
   }
@@ -43,9 +53,9 @@ function parseConfig(configPath) {
   return config;
 }
 
-function findConfig(startDir) {
+export function findConfig(startDir?: string): string | null {
   let dir = startDir || process.cwd();
-  while (true) {
+  for (;;) {
     const configPath = path.join(dir, "config.purus");
     if (fs.existsSync(configPath)) return configPath;
     const parent = path.dirname(dir);
@@ -54,7 +64,7 @@ function findConfig(startDir) {
   }
 }
 
-function loadConfig(startDir) {
+export function loadConfig(startDir?: string): LoadedConfig | null {
   const configPath = findConfig(startDir);
   if (!configPath) return null;
   return {
@@ -63,5 +73,3 @@ function loadConfig(startDir) {
     configDir: path.dirname(configPath),
   };
 }
-
-module.exports = { parseConfig, findConfig, loadConfig };
