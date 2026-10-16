@@ -13,18 +13,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # MoonBit checks and the JS build of the compiler run once. The compiler
-  # artifact is platform independent and is reused by the Node jobs.
-  moonbit:
-    name: moonbit
+  ci:
+    name: ci
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
       - name: Install MoonBit
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: pnpm install --frozen-lockfile
       - run: moon update
       - run: moon check
       - run: moon fmt --check
@@ -33,37 +37,7 @@ jobs:
         run: |
           moon info
           git diff --exit-code -- '*.mbti'
-      - run: moon build --target js --release
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: compiler
-          path: _build/js/release/build/src/cmd/main/main.js
-          if-no-files-found: error
-          retention-days: 3
-
-  node:
-    name: test (${{ matrix.os }}, node ${{ matrix.node-version }})
-    needs: moonbit
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [22, 24]
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: compiler
-          path: _build/js/release/build/src/cmd/main
-      - run: pnpm run build:packages
+      - run: pnpm run build
       - run: pnpm run test:packages
       - name: TypeScript checks (typecheck, ESLint, Prettier)
         run: |
@@ -73,7 +47,6 @@ jobs:
       - name: Verify API
         run: node -e "const p = require('./packages/purus'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
       - name: Compile examples
-        shell: bash
         run: |
           for f in examples/*.purus; do
             echo "compile $f"
