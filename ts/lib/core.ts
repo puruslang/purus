@@ -83,7 +83,9 @@ export function compile(source: string, options: CompileOptions = {}): string {
       result = runCompiler(args);
     } catch (err) {
       const e = err as ExecError;
-      throw new Error(detail(e) || `Compile error: ${e.message}`);
+      throw new Error(detail(e) || `Compile error: ${e.message}`, {
+        cause: err,
+      });
     }
     result = postProcess(result);
     if (header) {
@@ -108,7 +110,7 @@ export function check(source: string): true {
     return true;
   } catch (err) {
     const e = err as ExecError;
-    throw new Error(`Syntax error: ${detail(e) || e.message}`);
+    throw new Error(`Syntax error: ${detail(e) || e.message}`, { cause: err });
   } finally {
     removeQuietly(tmpFile);
   }

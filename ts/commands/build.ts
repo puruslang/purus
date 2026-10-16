@@ -112,7 +112,7 @@ function buildProject(args: BuildArgs): void {
   let outputDir: string;
   let useHeader: boolean;
   let useStrict: boolean;
-  let configResult: LoadedConfig | null = null;
+  let configResult: LoadedConfig | null;
 
   if (args.entry) {
     entryDir = path.resolve(args.entry);

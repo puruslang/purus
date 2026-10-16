@@ -11,7 +11,8 @@ This repository contains the **Purus compiler** (written in MoonBit) and **examp
 ```
 puruslang/purus
 ├── src/          # Compiler source (MoonBit)
-├── pkg/          # Published npm package output
+├── ts/           # npm wrapper: CLI and API (TypeScript)
+├── stdlib/       # Standard library modules (p-*.cjs)
 ├── bin/          # CLI entry point
 ├── scripts/      # Build & sync scripts
 ├── packages/     # Tooling workspaces (linter, ...), see docs/adr/0001-monorepo.md
@@ -33,7 +34,7 @@ git clone https://github.com/puruslang/purus.git
 cd purus
 moon update        # install MoonBit dependencies
 moon build --target js
-node scripts/build.js
+npm run build
 ```
 
 ## Development

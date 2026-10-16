@@ -11,7 +11,8 @@ Purus に興味を持っていただきありがとうございます！
 ```
 puruslang/purus
 ├── src/          # コンパイラソース (MoonBit)
-├── pkg/          # npm パッケージ出力
+├── ts/           # npm ラッパー(CLI と API、TypeScript)
+├── stdlib/       # 標準ライブラリ(p-*.cjs)
 ├── bin/          # CLI エントリポイント
 ├── scripts/      # ビルド・同期スクリプト
 ├── examples/     # サンプル .purus ファイル
@@ -32,7 +33,7 @@ git clone https://github.com/puruslang/purus.git
 cd purus
 moon update        # MoonBit 依存関係のインストール
 moon build --target js
-node scripts/build.js
+npm run build
 ```
 
 ## 開発

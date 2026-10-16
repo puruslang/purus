@@ -4,7 +4,7 @@ This file is for AI agents (Claude Code, Codex, and others) working in this repo
 
 ## Project overview
 
-Purus is a small language that compiles to JavaScript and lets you write code almost without the Shift key. This repository holds the compiler (MoonBit, built to the JS target), the npm wrapper (`bin/`, `pkg/`), the language specification ([RFC.md](RFC.md)) and examples. The linter, prettier plugin, VS Code extension, docs and playground live in other repositories under the `puruslang` organization (see [#17](https://github.com/puruslang/purus/issues/17) for the monorepo plan).
+Purus is a small language that compiles to JavaScript and lets you write code almost without the Shift key. This repository holds the compiler (MoonBit, built to the JS target), the npm wrapper (TypeScript in `ts/`, standard library in `stdlib/`, tooling packages in `packages/`), the language specification ([RFC.md](RFC.md)) and examples. The linter, prettier plugin, VS Code extension, docs and playground live in other repositories under the `puruslang` organization (see [#17](https://github.com/puruslang/purus/issues/17) for the monorepo plan).
 
 ## Language
 
@@ -21,7 +21,9 @@ Purus is a small language that compiles to JavaScript and lets you write code al
 | `moon test` | Run compiler tests (use `moon test --update` to refresh snapshots) |
 | `moon fmt` | Format MoonBit code |
 | `moon info` | Regenerate `pkg.generated.mbti` interface files |
-| `npm run build` | Build the JS compiler and copy it into `pkg/lib/` |
+| `npm run build` | Build the JS compiler, bundle the wrapper with tsdown into `dist/` and copy the compiler to `dist/purus-compiler.js` |
+| `npm run test:ts` | Vitest tests of the wrapper (needs `npm run build` first) |
+| `npm run typecheck:ts` / `lint:ts` / `format:check:ts` | TypeScript 6, ESLint and Prettier for `ts/`, `scripts/`, `test/` and `packages/` |
 | `npm run check` | Lint, format check, build and typecheck |
 
 Before finishing a change, run `moon info && moon fmt`, then `moon check` and `moon test`. Run `npm run build` when the compiler output or the npm wrapper changed.
@@ -40,7 +42,7 @@ Skills follow the [Skills CLI](https://github.com/vercel-labs/skills) layout. Co
 
 ## Do not
 
-- Edit generated files by hand: `pkg.generated.mbti`, `pkg/lib/purus-compiler.js`, `_build/`.
+- Edit generated files by hand: `pkg.generated.mbti`, `dist/`, `_build/`.
 - Commit secrets, tokens or personal data. `.env` is ignored.
 - Use POSIX-only shell syntax in npm scripts (the maintainer develops on Windows). Use Node scripts instead.
 - Add a dependency without a reason stated in the PR.
