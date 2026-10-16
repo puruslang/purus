@@ -565,3 +565,27 @@ test "parser: valid input records no errors" {
   let _ = parser.parse()
   assert_eq(parser.errors.length(), 0)
 }
+
+///|
+test "parser: unclosed and unmatched brackets are reported with positions" {
+  let p1 = Parser::new(tokenize("const x be [1, 2\n"))
+  let _ = p1.parse()
+  assert_true(p1.errors.any(fn(e) { e.contains("unclosed '['") }))
+  let p2 = Parser::new(tokenize("f[1]]\n"))
+  let _ = p2.parse()
+  assert_true(p2.errors.any(fn(e) { e.contains("unmatched ']'") }))
+}
+
+///|
+test "parser: balanced brackets and nested calls record no errors" {
+  let parser = Parser::new(tokenize("console.log[a[0]; [1, [2]]]\n"))
+  let _ = parser.parse()
+  assert_eq(parser.errors.length(), 0)
+}
+
+///|
+test "parser: missing token errors use the source spelling" {
+  let parser = Parser::new(tokenize("if x gt 1 then\n"))
+  let _ = parser.parse()
+  assert_true(parser.errors[0].contains("expected 'else'"))
+}
