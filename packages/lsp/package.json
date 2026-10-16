@@ -1,0 +1,64 @@
+{
+  "name": "@puruslang/lsp",
+  "version": "0.0.0-reserved",
+  "description": "Language Server (LSP) for the Purus language",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "puruslang-lsp": "dist/server.cjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "purus",
+    "lsp",
+    "language-server",
+    "altjs"
+  ],
+  "author": "otoneko. (https://github.com/otnc)",
+  "homepage": "https://purus.work",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puruslang/purus.git",
+    "directory": "packages/lsp"
+  },
+  "bugs": {
+    "url": "https://github.com/puruslang/purus/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@puruslang/linter": "workspace:*",
+    "@puruslang/prettier-plugin-purus": "workspace:*",
+    "purus": "workspace:*",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsdown": "^0.23.1",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.4"
+  }
+}
