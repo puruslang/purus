@@ -162,7 +162,7 @@ pub extend TokenKind with Show::{to_string, output}
 
 ///|
 pub impl Show for TokenKind with fn output(self, logger) {
-  logger.write_string(Show::to_string(self))
+  logger.write_string(@debug.to_string(self))
 }
 
 ///|
@@ -180,5 +180,5 @@ pub extend Token with Show::{to_string, output}
 
 ///|
 pub impl Show for Token with fn output(self, logger) {
-  logger.write_string(Show::to_string(self))
+  logger.write_string(@debug.to_string(self))
 }
