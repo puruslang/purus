@@ -1,62 +1,58 @@
-"use strict";
+import fs from "node:fs";
+import path from "node:path";
+import {
+  CONFIG_PURUS,
+  GITIGNORE,
+  MAIN_PURUS,
+  PRETTIERRC,
+} from "../lib/templates.js";
+import * as pm from "../lib/pm.js";
 
-const fs = require("fs");
-const path = require("path");
-const { CONFIG_PURUS, PRETTIERRC, MAIN_PURUS, GITIGNORE } = require("./templates.js");
-const pm = require("./pm.js");
+type ScaffoldPackage = {
+  main?: string;
+  type?: string;
+  scripts?: Record<string, string>;
+  [key: string]: unknown;
+};
 
-function run() {
+function writeIfMissing(file: string, label: string, content: string): void {
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, content);
+    console.log(`  ${label}`);
+  } else {
+    console.log(`  ${label} (skipped: already exists)`);
+  }
+}
+
+/** `purus init` */
+export function run(): void {
   const cwd = process.cwd();
 
-  // config.purus
-  const configPath = path.join(cwd, "config.purus");
-  if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(configPath, CONFIG_PURUS);
-    console.log("  config.purus");
-  } else {
-    console.log("  config.purus (skipped: already exists)");
-  }
+  writeIfMissing(path.join(cwd, "config.purus"), "config.purus", CONFIG_PURUS);
+  writeIfMissing(path.join(cwd, ".prettierrc"), ".prettierrc", PRETTIERRC);
+  writeIfMissing(path.join(cwd, ".gitignore"), ".gitignore", GITIGNORE);
 
-  // .prettierrc
-  const prettierrcPath = path.join(cwd, ".prettierrc");
-  if (!fs.existsSync(prettierrcPath)) {
-    fs.writeFileSync(prettierrcPath, PRETTIERRC);
-    console.log("  .prettierrc");
-  } else {
-    console.log("  .prettierrc (skipped: already exists)");
-  }
-
-  // .gitignore
-  const gitignorePath = path.join(cwd, ".gitignore");
-  if (!fs.existsSync(gitignorePath)) {
-    fs.writeFileSync(gitignorePath, GITIGNORE);
-    console.log("  .gitignore");
-  } else {
-    console.log("  .gitignore (skipped: already exists)");
-  }
-
-  // src/main.purus
   const srcDir = path.join(cwd, "src");
   if (!fs.existsSync(srcDir)) {
     fs.mkdirSync(srcDir, { recursive: true });
   }
-  const mainPurusPath = path.join(srcDir, "main.purus");
-  if (!fs.existsSync(mainPurusPath)) {
-    fs.writeFileSync(mainPurusPath, MAIN_PURUS);
-    console.log("  src/main.purus");
-  } else {
-    console.log("  src/main.purus (skipped: already exists)");
-  }
+  writeIfMissing(path.join(srcDir, "main.purus"), "src/main.purus", MAIN_PURUS);
 
   // package.json — add scripts if it exists, skip if not
   const pkgPath = path.join(cwd, "package.json");
   if (fs.existsSync(pkgPath)) {
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as ScaffoldPackage;
     let changed = false;
-    if (!pkg.main) { pkg.main = "dist/main.js"; changed = true; }
-    if (!pkg.type) { pkg.type = "module"; changed = true; }
-    pkg.scripts = pkg.scripts || {};
-    const scripts = {
+    if (!pkg.main) {
+      pkg.main = "dist/main.js";
+      changed = true;
+    }
+    if (!pkg.type) {
+      pkg.type = "module";
+      changed = true;
+    }
+    const scripts = (pkg.scripts = pkg.scripts || {});
+    const wanted: Record<string, string> = {
       purus: "purus",
       build: "purus build",
       compile: "purus compile",
@@ -64,8 +60,11 @@ function run() {
       format: "prettier --write ./src",
       lint: "purus-lint",
     };
-    for (const [k, v] of Object.entries(scripts)) {
-      if (!pkg.scripts[k]) { pkg.scripts[k] = v; changed = true; }
+    for (const [k, v] of Object.entries(wanted)) {
+      if (!scripts[k]) {
+        scripts[k] = v;
+        changed = true;
+      }
     }
     if (changed) {
       fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
@@ -76,12 +75,10 @@ function run() {
   } else {
     const manager = pm.detect(cwd);
     console.log(
-      `\nNo package.json found. Run \`${manager} init\` then \`purus init\` again to add scripts.`,
+      `\nNo package.json found. Run \`${manager} init\` then \`purus init\` again to add scripts.`
     );
   }
 
   console.log("\nInitialized Purus project in current directory.");
   console.log("Run `purus build` to compile.");
 }
-
-run();

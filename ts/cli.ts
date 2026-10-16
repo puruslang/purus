@@ -1,89 +1,87 @@
 #!/usr/bin/env node
-"use strict";
+import { spawnSync } from "node:child_process";
+import { run as build } from "./commands/build.js";
+import { run as check } from "./commands/check.js";
+import { run as create } from "./commands/create.js";
+import { run as generateConfig } from "./commands/generate-config.js";
+import { run as init } from "./commands/init.js";
+import { run as runFile } from "./commands/run.js";
+import { version } from "./lib/core.js";
+import { compilerPath } from "./lib/paths.js";
 
-const VERSION = require("../package.json").version;
-const cmd = process.argv[2];
+const HELP = [
+  `Purus v${version} - A language that compiles to JavaScript`,
+  "",
+  "Usage:",
+  "  purus build [file|dir]               Compile to JavaScript",
+  "  purus build --entry <file|dir>       Specify entry file or directory",
+  "  purus build --output <dir>           Specify output directory",
+  "  purus build                          Compile using config.purus",
+  "    .purus  -> .js",
+  "    .cpurus -> .cjs (CommonJS)",
+  "    .mpurus -> .mjs (ES Module)",
+  "  purus build --no-header [file]       Compile without header comment",
+  "  purus build --type <type>            Set module type (module|commonjs)",
+  "  purus run [file|dir]                 Run without generating files",
+  "  purus run --entry <file|dir>         Run entry file or directory",
+  "  purus run                            Run using config.purus",
+  "  purus check [file|dir]               Syntax check only",
+  "  purus check --entry <file|dir>       Check entry file or directory",
+  "  purus new [name] [-y]                Create a new project",
+  "  purus init                           Initialize project in current directory",
+  "  purus config                         Generate config.purus in current directory",
+  "  purus version                        Show version",
+  "  purus help                           Show this help",
+  "",
+  "Aliases: compile = build, create = new",
+];
 
-function printHelp() {
-  console.log(`Purus v${VERSION} - A language that compiles to JavaScript`);
-  console.log("");
-  console.log("Usage:");
-  console.log("  purus build [file|dir]               Compile to JavaScript");
-  console.log(
-    "  purus build --entry <file|dir>       Specify entry file or directory",
-  );
-  console.log(
-    "  purus build --output <dir>           Specify output directory",
-  );
-  console.log(
-    "  purus build                          Compile using config.purus",
-  );
-  console.log("    .purus  -> .js");
-  console.log("    .cpurus -> .cjs (CommonJS)");
-  console.log("    .mpurus -> .mjs (ES Module)");
-  console.log(
-    "  purus build --no-header [file]       Compile without header comment",
-  );
-  console.log(
-    "  purus build --type <type>            Set module type (module|commonjs)",
-  );
-  console.log(
-    "  purus run [file|dir]                 Run without generating files",
-  );
-  console.log(
-    "  purus run --entry <file|dir>         Run entry file or directory",
-  );
-  console.log("  purus run                            Run using config.purus");
-  console.log("  purus check [file|dir]               Syntax check only");
-  console.log(
-    "  purus check --entry <file|dir>       Check entry file or directory",
-  );
-  console.log("  purus new [name] [-y]                Create a new project");
-  console.log(
-    "  purus init                           Initialize project in current directory",
-  );
-  console.log(
-    "  purus config                         Generate config.purus in current directory",
-  );
-  console.log("  purus version                        Show version");
-  console.log("  purus help                           Show this help");
-  console.log("");
-  console.log("Aliases: compile = build, create = new");
+async function main(argv: string[]): Promise<void> {
+  const [cmd, ...args] = argv;
+
+  switch (cmd) {
+    case "new":
+    case "create":
+      await create(args);
+      break;
+    case "init":
+      init();
+      break;
+    case "config":
+      await generateConfig();
+      break;
+    case "build":
+    case "compile":
+      build(args);
+      break;
+    case "run":
+      runFile(args);
+      break;
+    case "check":
+      check(args);
+      break;
+    case "version":
+    case "--version":
+    case "-v":
+      console.log(`Purus v${version}`);
+      break;
+    case "help":
+    case "--help":
+    case "-h":
+    case undefined:
+      console.log(HELP.join("\n"));
+      break;
+    default: {
+      // Anything else goes straight to the MoonBit compiler CLI.
+      const result = spawnSync(process.execPath, [compilerPath, cmd, ...args], {
+        stdio: "inherit",
+      });
+      process.exit(result.status ?? 1);
+    }
+  }
 }
 
-switch (cmd) {
-  case "new":
-  case "create":
-    require("../pkg/lib/create.js");
-    break;
-  case "init":
-    require("../pkg/lib/init.js");
-    break;
-  case "config":
-    require("../pkg/lib/generate-config.js");
-    break;
-  case "build":
-  case "compile":
-    require("../pkg/lib/build-wrapper.js");
-    break;
-  case "run":
-    require("../pkg/lib/run-wrapper.js");
-    break;
-  case "check":
-    require("../pkg/lib/check-wrapper.js");
-    break;
-  case "version":
-  case "--version":
-  case "-v":
-    console.log(`Purus v${VERSION}`);
-    break;
-  case "help":
-  case "--help":
-  case "-h":
-  case undefined:
-    printHelp();
-    break;
-  default:
-    require("../pkg/lib/purus-compiler.js");
-    break;
-}
+main(process.argv.slice(2)).catch((err: unknown) => {
+  console.error(err instanceof Error ? err.message : String(err));
+  process.exit(1);
+});

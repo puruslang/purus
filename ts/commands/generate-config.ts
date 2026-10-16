@@ -1,15 +1,14 @@
-"use strict";
+import fs from "node:fs";
+import path from "node:path";
+import readline from "node:readline";
+import { CONFIG_PURUS } from "../lib/templates.js";
 
-const fs = require("fs");
-const path = require("path");
-const readline = require("readline");
-const { CONFIG_PURUS } = require("./templates.js");
-
-function question(rl, text) {
+function question(rl: readline.Interface, text: string): Promise<string> {
   return new Promise((resolve) => rl.question(text, (a) => resolve(a.trim())));
 }
 
-async function run() {
+/** `purus config` */
+export async function run(): Promise<void> {
   const configPath = path.join(process.cwd(), "config.purus");
 
   if (fs.existsSync(configPath)) {
@@ -19,7 +18,7 @@ async function run() {
     });
     const answer = await question(
       rl,
-      "config.purus already exists. Overwrite? [y/N] ",
+      "config.purus already exists. Overwrite? [y/N] "
     );
     rl.close();
     if (answer.toLowerCase() !== "y") {
@@ -31,5 +30,3 @@ async function run() {
   fs.writeFileSync(configPath, CONFIG_PURUS);
   console.log("Generated config.purus");
 }
-
-run();

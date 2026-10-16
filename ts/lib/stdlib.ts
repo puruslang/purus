@@ -8,23 +8,35 @@
  * in the rest of the code are included in the emitted object.
  */
 
-"use strict";
+import fs from "node:fs";
+import { createRequire } from "node:module";
+import path from "node:path";
+import { stdlibDir } from "./paths.js";
 
-const fs = require("fs");
-const path = require("path");
+const require = createRequire(import.meta.url);
 
-const STDLIB_DIR = path.join(__dirname, "..", "stdlib");
-const cache = {};
+interface StdlibModule {
+  src: string;
+  mod: Record<string, unknown>;
+  spread: string | null;
+  spreadObj: object | null;
+  constants: Record<string, string>;
+}
+const cache: Record<string, StdlibModule> = {};
 
 // Global objects reachable by spread name
-const GLOBALS = { Math, JSON };
+const GLOBALS: Record<string, object> = { Math, JSON };
 
 /** Load and cache a stdlib module. */
-function load(name) {
+export function load(name: string): StdlibModule {
   if (cache[name]) return cache[name];
-  const fp = path.join(STDLIB_DIR, name + ".js");
+  const fp = path.join(stdlibDir, name + ".cjs");
   const src = fs.readFileSync(fp, "utf8");
-  const m = require(fp);
+  const m = require(fp) as {
+    mod: Record<string, unknown>;
+    spread?: string;
+    constants?: Record<string, string>;
+  };
   cache[name] = {
     src,
     mod: m.mod,
@@ -36,7 +48,7 @@ function load(name) {
 }
 
 /** Extract source of a single method from exports.mod block. */
-function extractMethod(src, name) {
+function extractMethod(src: string, name: string): string | null {
   // Match:  name( ... ) { ... }  (balanced braces)
   const re = new RegExp(`(?:^|[,\\n])\\s*(${name}\\([^)]*\\)\\s*\\{)`, "m");
   const hit = re.exec(src);
@@ -60,18 +72,22 @@ function extractMethod(src, name) {
 }
 
 /** Collect `this.xxx(` calls in a method body to find internal deps. */
-function collectThisDeps(methodSrc) {
-  const deps = new Set();
+function collectThisDeps(methodSrc: string): Set<string> {
+  const deps = new Set<string>();
   for (const m of methodSrc.matchAll(/this\.(\w+)\s*\(/g)) deps.add(m[1]);
   return deps;
 }
 
 /** Recursively collect all deps for a set of method names. */
-function collectAllDeps(mod, src, names) {
+function collectAllDeps(
+  mod: Record<string, unknown>,
+  src: string,
+  names: Set<string>
+): Set<string> {
   const all = new Set(names);
   const queue = [...names];
   while (queue.length) {
-    const name = queue.pop();
+    const name = queue.pop() as string;
     if (typeof mod[name] !== "function") continue;
     const body = extractMethod(src, name);
     if (!body) continue;
@@ -89,12 +105,16 @@ function collectAllDeps(mod, src, names) {
  * Resolve a whole-module import with tree-shaking.
  * Scans `restOfCode` for `binding.xxx` to determine used properties.
  */
-function resolveWhole(moduleName, binding, restOfCode) {
+function resolveWhole(
+  moduleName: string,
+  binding: string,
+  restOfCode: string
+): string {
   const m = load(moduleName);
 
   // Collect used property names
   const re = new RegExp("\\b" + binding + "\\.(\\w+)\\b", "g");
-  const used = new Set();
+  const used = new Set<string>();
   for (const match of restOfCode.matchAll(re)) used.add(match[1]);
 
   if (used.size === 0) return `const ${binding} = {};`;
@@ -102,7 +122,7 @@ function resolveWhole(moduleName, binding, restOfCode) {
   // Expand with internal `this.xxx()` dependencies
   const expanded = collectAllDeps(m.mod, m.src, used);
 
-  const props = [];
+  const props: string[] = [];
 
   for (const name of expanded) {
     // 1. constant alias (pi → Math.PI)
@@ -133,10 +153,10 @@ function resolveWhole(moduleName, binding, restOfCode) {
 /**
  * Post-process compiler output: replace stdlib markers with actual JS.
  */
-function postProcess(js) {
+export function postProcess(js: string): string {
   return js.replace(
     /^(\s*)\/\/ @purus-stdlib:whole:([\w-]+):([\w-]+)$/gm,
-    (match, indent, moduleName, binding) => {
+    (match: string, indent: string, moduleName: string, binding: string) => {
       // Everything after this marker is "rest of code" for tree-shaking
       const markerEnd = js.indexOf(match) + match.length;
       const rest = js.slice(markerEnd);
@@ -145,8 +165,6 @@ function postProcess(js) {
         .split("\n")
         .map((l) => indent + l)
         .join("\n");
-    },
+    }
   );
 }
-
-module.exports = { postProcess, load };
