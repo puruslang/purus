@@ -4,6 +4,18 @@
 
 ---
 
+## v1.1.0 (2026/10/16)
+
+### Changes
+
+- TypeScript で書き直し、tsdown でビルドします。ESM と CommonJS の入口、型定義(`lint`、`tokenize`、`defaultRules` と `Diagnostic`、`Rules`、`Token` 型)、`exports` マップに対応しました。`main` は `src/index.js` から `dist/index.cjs` に変わり、`purus-lint` コマンドは `dist/cli.cjs` です。`src/` への深いインポートは使えなくなります。
+- Purus のモノレポ(puruslang/purus の `packages/linter`)に移動しました。
+
+### Bug Fixes
+
+- config.purus でメッセージ無しに上書きしたルールが `undefined` と表示される問題を修正しました。既定のメッセージを使います。
+
+---
 ## v1.0.1 (2026-06-26)
 
 ### バグ修正

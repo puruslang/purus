@@ -4,6 +4,18 @@ Change history for `@puruslang/linter`.
 
 ---
 
+## v1.1.0 (2026-10-16)
+
+### Changes
+
+- Rewritten in TypeScript and built with tsdown: ESM and CommonJS entry points with type declarations (`lint`, `tokenize`, `defaultRules` and the `Diagnostic`, `Rules`, `Token` types), `exports` map. `main` moved from `src/index.js` to `dist/index.cjs`; the `purus-lint` command is `dist/cli.cjs`. Deep imports into `src/` no longer exist.
+- Moved into the Purus monorepo (`packages/linter` in puruslang/purus).
+
+### Bug Fixes
+
+- A rule overridden through config.purus without a message no longer prints `undefined`; it falls back to the default message.
+
+---
 ## v1.0.1 (2026-06-26)
 
 ### Bug Fixes

@@ -4,6 +4,15 @@ Change history for `@puruslang/prettier-plugin-purus`.
 
 ---
 
+## v1.1.0 (2026-10-16)
+
+### Changes
+
+- Rewritten in TypeScript and built with tsdown: ESM and CommonJS entry points with type declarations (`formatPurus`, `languages`, `parsers`, `printers`), `exports` map. `main` moved from `src/index.js` to `dist/index.cjs`. Deep imports into `src/` no longer exist.
+- Moved into the Purus monorepo (`packages/prettier-plugin` in puruslang/purus).
+- Removed unused internal code.
+
+---
 ## v1.0.1 (2026-06-26)
 
 ### Bug Fixes
