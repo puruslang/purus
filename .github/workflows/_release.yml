@@ -211,4 +211,6 @@ jobs:
           ARGS=(--title "$TAG" --generate-notes)
           if [ -n "$PREV" ]; then ARGS+=(--notes-start-tag "$PREV"); fi
           if [ "$PRERELEASE" = "true" ]; then ARGS+=(--prerelease); fi
+          # Only the compiler ("v*" tags) may take the repository-wide Latest badge.
+          case "$TAG" in v[0-9]*) ;; *) ARGS+=(--latest=false) ;; esac
           gh release create "$TAG" "${ARGS[@]}"
