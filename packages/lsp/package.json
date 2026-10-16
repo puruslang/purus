@@ -49,9 +49,9 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@puruslang/linter": "workspace:*",
-    "@puruslang/prettier-plugin-purus": "workspace:*",
-    "purus": "workspace:*",
+    "@puruslang/linter": "workspace:^",
+    "@puruslang/prettier-plugin-purus": "workspace:^",
+    "purus": "workspace:^",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.15"
   },
