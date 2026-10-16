@@ -1,0 +1,31 @@
+name: Release prettier-plugin
+
+# Releases the prettier-plugin package. The steps live in _release.yml.
+# Trusted Publisher on npmjs.com: workflow release-prettier-plugin.yml, environment release.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release: a semver bump (patch/minor/major/prerelease) or an explicit version (e.g. 1.2.0 or 1.2.0-beta.0)"
+        required: true
+        default: patch
+      dist_tag:
+        description: 'npm dist-tag. Leave empty to auto-detect: the prerelease identifier (e.g. beta from 1.2.0-beta.0), or latest.'
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    permissions:
+      contents: read
+      id-token: write # npm Trusted Publishing (OIDC)
+    uses: ./.github/workflows/_release.yml
+    with:
+      package: prettier-plugin
+      version: ${{ inputs.version }}
+      dist_tag: ${{ inputs.dist_tag }}
+    secrets: inherit
+
