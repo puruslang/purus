@@ -1,6 +1,6 @@
 {
   "name": "@puruslang/mcp",
-  "version": "0.0.0-reserved",
+  "version": "0.1.0",
   "description": "MCP (Model Context Protocol) server for the Purus language",
   "license": "Apache-2.0",
   "type": "module",
