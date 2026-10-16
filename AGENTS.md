@@ -21,12 +21,12 @@ Purus is a small language that compiles to JavaScript and lets you write code al
 | `moon test` | Run compiler tests (use `moon test --update` to refresh snapshots) |
 | `moon fmt` | Format MoonBit code |
 | `moon info` | Regenerate `pkg.generated.mbti` interface files |
-| `npm run build` | Build the JS compiler, bundle the wrapper with tsdown into `dist/` and copy the compiler to `dist/purus-compiler.js` |
-| `npm run test:ts` | Vitest tests of the wrapper (needs `npm run build` first) |
-| `npm run typecheck:ts` / `lint:ts` / `format:check:ts` | TypeScript 6, ESLint and Prettier for `ts/`, `scripts/`, `test/` and `packages/` |
-| `npm run check` | Lint, format check, build and typecheck |
+| `pnpm run build` | Build the JS compiler, bundle the wrapper with tsdown into `dist/` and copy the compiler to `dist/purus-compiler.js` |
+| `pnpm run test:ts` | Vitest tests of the wrapper (needs `pnpm run build` first) |
+| `pnpm run typecheck:ts` / `lint:ts` / `format:check:ts` | TypeScript 6, ESLint and Prettier for `ts/`, `scripts/`, `test/` and `packages/` |
+| `pnpm run check` | Lint, format check, build and typecheck |
 
-Before finishing a change, run `moon info && moon fmt`, then `moon check` and `moon test`. Run `npm run build` when the compiler output or the npm wrapper changed.
+Before finishing a change, run `moon info && moon fmt`, then `moon check` and `moon test`. Run `pnpm run build` when the compiler output or the npm wrapper changed. Dependencies are managed with pnpm (`pnpm install`, workspace in `pnpm-workspace.yaml`); do not commit a `package-lock.json`.
 
 ## Workflow
 

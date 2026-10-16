@@ -23,6 +23,7 @@ puruslang/purus
 ## 必要な環境
 
 - [Node.js](https://nodejs.org/) >= 22
+- [pnpm](https://pnpm.io/)(版は `packageManager` で固定しています。`corepack enable` が使えます)
 - [MoonBit](https://www.moonbitlang.com/)
 - [Git](https://git-scm.com/)
 
@@ -33,7 +34,8 @@ git clone https://github.com/puruslang/purus.git
 cd purus
 moon update        # MoonBit 依存関係のインストール
 moon build --target js
-npm run build
+pnpm install
+pnpm run build
 ```
 
 ## 開発
@@ -42,8 +44,8 @@ npm run build
 |---|---|
 | `moon test` | 全テストの実行 |
 | `moon check` | 型チェック |
-| `npm run build` | フルビルド（コンパイル + コピー）|
-| `npm run sync` | バージョンを moon.mod に同期 |
+| `pnpm run build` | フルビルド（コンパイル + コピー）|
+| `pnpm run sync` | バージョンを moon.mod に同期 |
 
 ## プルリクエストの提出
 

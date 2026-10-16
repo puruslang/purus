@@ -25,10 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+          cache: pnpm
 
       - name: Install MoonBit (Unix)
         if: runner.os != 'Windows'
@@ -44,27 +46,27 @@ jobs:
           irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
           "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       - run: moon update
       - run: moon check
       - run: moon fmt --check
       - run: moon test
-      - run: npm run build
+      - run: pnpm run build
 
       - name: Wrapper tests
-        run: npm run test:ts
+        run: pnpm run test:ts
 
       - name: Verify API
         run: node -e "const p = require('.'); console.log('version:', p.version); console.log(p.compile('const x be 42'))"
 
       - name: Test workspace packages
-        run: npm test --workspaces --if-present
+        run: pnpm run test:packages
 
       - name: TypeScript checks (typecheck, ESLint, Prettier)
         run: |
-          npm run typecheck:ts
-          npm run lint:ts
-          npm run format:check:ts
+          pnpm run typecheck:ts
+          pnpm run lint:ts
+          pnpm run format:check:ts
 
       - name: Compile examples
         shell: bash
