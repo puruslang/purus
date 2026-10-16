@@ -1,9 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directories:
-      - /
-      - /packages/*
+    # npm workspaces share the root lockfile; the root update also covers packages/*.
+    directory: /
     schedule:
       interval: weekly
       day: monday
