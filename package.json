@@ -30,7 +30,7 @@
     "test": "moon test --target js",
     "build:compiler": "moon build --target js --release",
     "build:copy": "node scripts/build.ts",
-    "build": "pnpm run build:compiler && pnpm run build:ts && pnpm run build:copy",
+    "build": "pnpm run build:compiler && pnpm run build:ts && pnpm run build:copy && pnpm run build:packages",
     "lint": "moon check",
     "lint:fix": "moon fmt",
     "format": "moon fmt && prettier --write ts scripts test",
@@ -45,7 +45,8 @@
     "format:ts": "prettier --write ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
     "build:ts": "tsdown",
     "test:ts": "vitest run",
-    "test:packages": "pnpm --filter \"./packages/*\" --if-present run test"
+    "test:packages": "pnpm --workspace-concurrency=1 --filter \"./packages/*\" --if-present run test",
+    "build:packages": "pnpm --filter \"./packages/*\" --if-present run build"
   },
   "keywords": [
     "compiler",
