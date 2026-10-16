@@ -15,6 +15,7 @@ export default tseslint.config(
       "examples/**",
       "skills/**",
       ".agents/**",
+      "packages/purus/stdlib/**",
     ],
   },
   js.configs.recommended,

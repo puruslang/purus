@@ -1,0 +1,69 @@
+{
+  "name": "purus",
+  "version": "1.2.0",
+  "description": "Purus - /ˈpuː.rus/ means pure✨ in Latin - is a beautiful, simple, and easy-to-use language. It compiles to JavaScript. It makes your fingers free from the Shift key. With Purus, you can write code almost without pressing the Shift key.",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "purus": "dist/cli.cjs"
+  },
+  "files": [
+    "dist",
+    "stdlib",
+    "LICENSE",
+    "README.md",
+    "README-ja.md"
+  ],
+  "scripts": {
+    "build": "tsdown && node scripts/build.ts",
+    "sync": "node scripts/sync-version.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "compiler",
+    "language",
+    "javascript",
+    "transpiler",
+    "altjs",
+    "lang",
+    "purus",
+    "noshift"
+  ],
+  "author": "otoneko. (https://github.com/otnc)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puruslang/purus",
+    "directory": "packages/purus"
+  },
+  "bugs": {
+    "url": "https://github.com/puruslang/purus/issues"
+  },
+  "funding": {
+    "url": "https://github.com/sponsors/otnc"
+  },
+  "homepage": "https://purus.work",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.0.3",
+    "tsdown": "^0.23.1",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.3"
+  }
+}

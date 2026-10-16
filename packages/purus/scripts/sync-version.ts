@@ -5,12 +5,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const root = path.join(import.meta.dirname, "..");
+const pkgRoot = path.join(import.meta.dirname, "..");
+const repoRoot = path.join(pkgRoot, "..", "..");
 const { version } = JSON.parse(
-  fs.readFileSync(path.join(root, "package.json"), "utf8")
+  fs.readFileSync(path.join(pkgRoot, "package.json"), "utf8")
 ) as { version: string };
 
-const moonModPath = path.join(root, "moon.mod");
+const moonModPath = path.join(repoRoot, "moon.mod");
 const content = fs.readFileSync(moonModPath, "utf8");
 
 const versionLine = /^version\s*=\s*"([^"]*)"/m;

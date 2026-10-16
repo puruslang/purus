@@ -4,7 +4,7 @@ This file is for AI agents (Claude Code, Codex, and others) working in this repo
 
 ## Project overview
 
-Purus is a small language that compiles to JavaScript and lets you write code almost without the Shift key. This repository holds the compiler (MoonBit, built to the JS target), the npm wrapper (TypeScript in `ts/`, standard library in `stdlib/`, tooling packages in `packages/`), the language specification ([RFC.md](RFC.md)) and examples. The linter, prettier plugin, VS Code extension, docs and playground live in other repositories under the `puruslang` organization (see [#17](https://github.com/puruslang/purus/issues/17) for the monorepo plan).
+Purus is a small language that compiles to JavaScript and lets you write code almost without the Shift key. This repository holds the compiler (MoonBit, built to the JS target), the npm packages under `packages/` (`purus` CLI/API in TypeScript with the standard library, `linter`, `prettier-plugin`, `lsp`, `mcp`; the repository root is the private `purus-monorepo`), the language specification ([RFC.md](RFC.md)) and examples. The linter, prettier plugin, VS Code extension, docs and playground live in other repositories under the `puruslang` organization (see [#17](https://github.com/puruslang/purus/issues/17) for the monorepo plan).
 
 ## Language
 
@@ -21,9 +21,9 @@ Purus is a small language that compiles to JavaScript and lets you write code al
 | `moon test` | Run compiler tests (use `moon test --update` to refresh snapshots) |
 | `moon fmt` | Format MoonBit code |
 | `moon info` | Regenerate `pkg.generated.mbti` interface files |
-| `pnpm run build` | Build the JS compiler, bundle the wrapper with tsdown into `dist/` and copy the compiler to `dist/purus-compiler.js` |
-| `pnpm run test:ts` | Vitest tests of the wrapper (needs `pnpm run build` first) |
-| `pnpm run typecheck:ts` / `lint:ts` / `format:check:ts` | TypeScript 6, ESLint and Prettier for `ts/`, `scripts/`, `test/` and `packages/` |
+| `pnpm run build` | Build the JS compiler (release) and every package (tsdown); the compiler is copied to `packages/purus/dist/purus-compiler.js` |
+| `pnpm run test:packages` | Vitest tests of all packages (needs `pnpm run build` first) |
+| `pnpm run typecheck:ts` / `lint:ts` / `format:check:ts` | TypeScript 6, ESLint and Prettier for `packages/` |
 | `pnpm run check` | Lint, format check, build and typecheck |
 
 Before finishing a change, run `moon info && moon fmt`, then `moon check` and `moon test`. Run `pnpm run build` when the compiler output or the npm wrapper changed. Dependencies are managed with pnpm (`pnpm install`, workspace in `pnpm-workspace.yaml`); do not commit a `package-lock.json`.

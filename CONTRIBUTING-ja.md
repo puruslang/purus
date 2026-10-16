@@ -11,10 +11,7 @@ Purus に興味を持っていただきありがとうございます！
 ```
 puruslang/purus
 ├── src/          # コンパイラソース (MoonBit)
-├── ts/           # npm ラッパー(CLI と API、TypeScript)
-├── stdlib/       # 標準ライブラリ(p-*.cjs)
-├── bin/          # CLI エントリポイント
-├── scripts/      # ビルド・同期スクリプト
+├── packages/     # npm packages: purus (CLI and API), linter, prettier-plugin, lsp, mcp
 ├── examples/     # サンプル .purus ファイル
 ├── moon.mod # MoonBit モジュール定義
 └── package.json

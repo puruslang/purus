@@ -11,11 +11,7 @@ This repository contains the **Purus compiler** (written in MoonBit) and **examp
 ```
 puruslang/purus
 ├── src/          # Compiler source (MoonBit)
-├── ts/           # npm wrapper: CLI and API (TypeScript)
-├── stdlib/       # Standard library modules (p-*.cjs)
-├── bin/          # CLI entry point
-├── scripts/      # Build & sync scripts
-├── packages/     # Tooling workspaces (linter, ...), see docs/adr/0001-monorepo.md
+├── packages/     # npm packages: purus (CLI and API), linter, prettier-plugin, lsp, mcp
 ├── examples/     # Sample .purus files
 ├── moon.mod # MoonBit module definition
 └── package.json
