@@ -51,9 +51,9 @@ fn Parser::expect(self : Parser, expected : @lexer.TokenKind) -> Unit {
     self.errors.push(
       at +
       ": expected " +
-      expected.to_string() +
+      describe_token(expected) +
       " but found " +
-      got.to_string(),
+      describe_token(got),
     )
   }
 }
@@ -99,7 +99,33 @@ pub fn Parser::parse(self : Parser) -> Array[Stmt] {
     }
     self.skip_newlines_and_indent() |> ignore
   }
+  self.check_brackets()
   stmts
+}
+
+///|
+/// Report unmatched [ / ] with their positions.
+fn Parser::check_brackets(self : Parser) -> Unit {
+  let stack : Array[@lexer.Token] = []
+  for tok in self.tokens {
+    match tok.kind {
+      LBracket => stack.push(tok)
+      RBracket =>
+        if stack.length() == 0 {
+          self.errors.push(
+            tok.line.to_string() + ":" + tok.col.to_string() + ": unmatched ']'",
+          )
+        } else {
+          let _ = stack.pop()
+        }
+      _ => ()
+    }
+  }
+  for tok in stack {
+    self.errors.push(
+      tok.line.to_string() + ":" + tok.col.to_string() + ": unclosed '['",
+    )
+  }
 }
 
 ///|
@@ -1344,5 +1370,14 @@ fn Parser::parse_class_member(self : Parser) -> ClassMember? {
       }
     }
     _ => None
+  }
+}
+
+///|
+/// Source spelling of a token for error messages (keyword text when known).
+fn describe_token(kind : @lexer.TokenKind) -> String {
+  match keyword_text(kind) {
+    Some(s) => "'" + s + "'"
+    None => kind.to_string()
   }
 }
