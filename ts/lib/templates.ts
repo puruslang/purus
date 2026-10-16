@@ -1,6 +1,4 @@
-"use strict";
-
-const CONFIG_PURUS = `-- Purus Configuration
+export const CONFIG_PURUS = `-- Purus Configuration
 const entry be ///src///
 const output be ///dist///
 const type be ///module///
@@ -26,7 +24,7 @@ const lint.no-unused-import be ///warn///
 const lint.consistent-naming be ///warn///
 `;
 
-const PRETTIERRC =
+export const PRETTIERRC =
   JSON.stringify(
     {
       tabWidth: 2,
@@ -34,17 +32,15 @@ const PRETTIERRC =
       plugins: ["@puruslang/prettier-plugin-purus"],
     },
     null,
-    2,
+    2
   ) + "\n";
 
-const MAIN_PURUS = `-- main.purus
+export const MAIN_PURUS = `-- main.purus
 
 const message be ///Hello, World///
 console.log[message]
 `;
 
-const GITIGNORE = `dist/
+export const GITIGNORE = `dist/
 node_modules/
 `;
-
-module.exports = { CONFIG_PURUS, PRETTIERRC, MAIN_PURUS, GITIGNORE };

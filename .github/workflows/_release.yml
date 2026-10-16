@@ -121,7 +121,7 @@ jobs:
           OLD="$(node -p "require('./$DIR/package.json').version")"
           if [ "$DIR" = "." ]; then
             npm version "$VERSION_INPUT" --no-git-tag-version --allow-same-version >/dev/null
-            node scripts/sync-version.js
+            node scripts/sync-version.ts
           else
             npm version "$VERSION_INPUT" -w "$NAME" --no-git-tag-version --allow-same-version >/dev/null
           fi

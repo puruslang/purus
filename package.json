@@ -2,22 +2,26 @@
   "name": "purus",
   "version": "1.2.0-beta.0",
   "description": "Purus - /ˈpuː.rus/ means pure✨ in Latin - is a beautiful, simple, and easy-to-use language. It compiles to JavaScript. It makes your fingers free from the Shift key. With Purus, you can write code almost without pressing the Shift key.",
-  "main": "pkg/index.js",
-  "module": "pkg/index.mjs",
-  "types": "pkg/index.d.ts",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "exports": {
     ".": {
-      "types": "./pkg/index.d.ts",
-      "import": "./pkg/index.mjs",
-      "require": "./pkg/index.js"
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.cts"
+      },
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
   "bin": {
-    "purus": "bin/purus.js"
+    "purus": "dist/cli.cjs"
   },
   "files": [
-    "pkg/",
-    "bin/",
+    "dist",
+    "stdlib",
     "LICENSE",
     "README.md",
     "README-ja.md"
@@ -25,20 +29,22 @@
   "scripts": {
     "test": "moon test --target js",
     "build:compiler": "moon build --target js",
-    "build:copy": "node scripts/build.js",
-    "build": "npm run build:compiler && npm run build:copy",
+    "build:copy": "node scripts/build.ts",
+    "build": "npm run build:compiler && npm run build:ts && npm run build:copy",
     "lint": "moon check",
     "lint:fix": "moon fmt",
-    "format": "moon fmt && prettier --write ./bin ./pkg ./scripts",
-    "format:check": "moon fmt --check && prettier --check ./bin ./pkg ./scripts",
+    "format": "moon fmt && prettier --write ts scripts test",
+    "format:check": "moon fmt --check && prettier --check ts scripts test",
     "typecheck": "moon check",
     "check": "npm run lint && npm run format:check && npm run build && npm run typecheck",
-    "sync": "node scripts/sync-version.js",
+    "sync": "node scripts/sync-version.ts",
     "prepublishOnly": "npm run sync && npm run build",
-    "typecheck:ts": "npm run typecheck --workspaces --if-present",
-    "lint:ts": "eslint packages",
-    "format:check:ts": "prettier --check packages .prettierrc.json eslint.config.mjs tsconfig.base.json",
-    "format:ts": "prettier --write packages .prettierrc.json eslint.config.mjs tsconfig.base.json"
+    "typecheck:ts": "tsc --noEmit && npm run typecheck --workspaces --if-present",
+    "lint:ts": "eslint ts scripts test packages",
+    "format:check:ts": "prettier --check ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
+    "format:ts": "prettier --write ts scripts test packages .prettierrc.json eslint.config.mjs tsconfig.base.json tsconfig.json tsdown.config.ts vitest.config.ts",
+    "build:ts": "tsdown",
+    "test:ts": "vitest run"
   },
   "keywords": [
     "compiler",
