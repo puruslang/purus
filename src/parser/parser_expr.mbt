@@ -648,6 +648,11 @@ fn Parser::parse_primary(self : Parser) -> Expr {
       self.pos += 1
       Ident(s)
     }
+    Require_ => {
+      // CommonJS: require[///module///]
+      self.pos += 1
+      Ident("require")
+    }
     List_ => {
       // list[...]
       self.pos += 1
