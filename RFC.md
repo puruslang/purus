@@ -696,6 +696,8 @@ Type aliases are erased in JavaScript output.
 
 ## 7. Functions
 
+> **Note (expression bodies):** `fn name x to expr` and `get fn name to expr` compile to a statement and do **not** return the value; write `to return expr`. Anonymous `fn x to expr` is an arrow function and does return. `@puruslang/linter` warns about the named form (rule `expression-body-no-return`). Changing the semantics is a breaking change reserved for a major version (see #60).
+
 ### 7.1 Named Functions
 
 **Block body:**

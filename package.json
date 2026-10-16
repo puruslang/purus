@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "test": "moon test --target js",
-    "build:compiler": "moon build --target js",
+    "build:compiler": "moon build --target js --release",
     "build:copy": "node scripts/build.ts",
     "build": "pnpm run build:compiler && pnpm run build:ts && pnpm run build:copy",
     "lint": "moon check",
