@@ -1310,3 +1310,19 @@ test "codegen: typed param in anonymous fn" {
   let js = compile("const f be fn a of Number to return a\nconst z be 1")
   assert_eq(js, "const f = (a) => a;\nconst z = 1;\n")
 }
+
+///|
+test "codegen: require[...] in expression position" {
+  let js = compile(
+    "const fs be require[///fs///]\nconst path be require[//;path;//]",
+  )
+  assert_eq(
+    js, "const fs = require(\"fs\");\nconst path = require(\"path\");\n",
+  )
+}
+
+///|
+test "codegen: require result can be used in member access" {
+  let js = compile("const x be require[///os///].platform[]")
+  assert_eq(js, "const x = require(\"os\").platform();\n")
+}
