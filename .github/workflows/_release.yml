@@ -90,8 +90,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Install MoonBit (compiler only)
-        if: inputs.package == 'purus'
+      - name: Install MoonBit
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
@@ -108,8 +107,9 @@ jobs:
         env:
           NAME: ${{ steps.pkg.outputs.name }}
         run: |
+          # Workspace dependencies (compiler, linter, ...) must be built first.
+          pnpm run build
           pnpm --filter "$NAME" --if-present run test
-          pnpm --filter "$NAME" --if-present run build
 
       - name: Bump version
         id: bump
@@ -195,7 +195,10 @@ jobs:
           if [ "$DIR" = "." ]; then
             npm publish --access public --provenance --tag "$NPM_TAG"
           else
-            (cd "$DIR" && npm publish --access public --provenance --tag "$NPM_TAG")
+            # pnpm pack replaces workspace:^ dependencies by real versions; npm publishes the tarball (Trusted Publishing).
+            PACK_DIR="$(mktemp -d)"
+            (cd "$DIR" && pnpm pack --pack-destination "$PACK_DIR" >/dev/null)
+            npm publish "$PACK_DIR"/*.tgz --access public --provenance --tag "$NPM_TAG"
           fi
 
       - name: Push commit and tag
