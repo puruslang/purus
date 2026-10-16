@@ -9,42 +9,42 @@ describe("lint()", () => {
 
   it("warns on var usage (no-var)", () => {
     const diags = lint("var x be 42");
-    expect(diags.some(d => d.rule === "no-var")).toBe(true);
+    expect(diags.some((d) => d.rule === "no-var")).toBe(true);
   });
 
   it("errors on bare assignment (bare-assignment)", () => {
     const diags = lint("x be 42");
-    expect(diags.some(d => d.rule === "bare-assignment")).toBe(true);
+    expect(diags.some((d) => d.rule === "bare-assignment")).toBe(true);
   });
 
   it("warns on nil usage (no-nil)", () => {
     const diags = lint("const x be nil");
-    expect(diags.some(d => d.rule === "no-nil")).toBe(true);
+    expect(diags.some((d) => d.rule === "no-nil")).toBe(true);
   });
 
   it("errors on JS chars (no-js-chars)", () => {
-    const diags = lint('const x be (1 + 2)');
-    expect(diags.some(d => d.rule === "no-js-chars")).toBe(true);
+    const diags = lint("const x be (1 + 2)");
+    expect(diags.some((d) => d.rule === "no-js-chars")).toBe(true);
   });
 
   it("errors on JS operators (no-js-operators)", () => {
     const diags = lint("const r be x === y");
-    expect(diags.some(d => d.rule === "no-js-operators")).toBe(true);
+    expect(diags.some((d) => d.rule === "no-js-operators")).toBe(true);
   });
 
   it("warns on deprecated function keyword (no-function)", () => {
     const diags = lint("function greet name\n  console.log[name]");
-    expect(diags.some(d => d.rule === "no-function")).toBe(true);
+    expect(diags.some((d) => d.rule === "no-function")).toBe(true);
   });
 
   it("errors on unmatched bracket (bracket-match)", () => {
     const diags = lint("const x be [1; 2");
-    expect(diags.some(d => d.rule === "bracket-match")).toBe(true);
+    expect(diags.some((d) => d.rule === "bracket-match")).toBe(true);
   });
 
   it("allows rule overrides to disable rules", () => {
     const diags = lint("var x be 42", { "no-var": { severity: "off" } });
-    expect(diags.some(d => d.rule === "no-var")).toBe(false);
+    expect(diags.some((d) => d.rule === "no-var")).toBe(false);
   });
 
   it("diagnostic has required fields", () => {
@@ -59,11 +59,11 @@ describe("lint()", () => {
 
   it("blank keyword is valid (no errors)", () => {
     const diags = lint("fn f blank; x to x");
-    expect(diags.filter(d => d.severity === "error")).toHaveLength(0);
+    expect(diags.filter((d) => d.severity === "error")).toHaveLength(0);
   });
 
   it("//;text;// string is valid (no errors)", () => {
     const diags = lint("const s be //;hello;//");
-    expect(diags.filter(d => d.severity === "error")).toHaveLength(0);
+    expect(diags.filter((d) => d.severity === "error")).toHaveLength(0);
   });
 });

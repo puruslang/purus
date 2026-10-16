@@ -34,7 +34,11 @@
     "typecheck": "moon check",
     "check": "npm run lint && npm run format:check && npm run build && npm run typecheck",
     "sync": "node scripts/sync-version.js",
-    "prepublishOnly": "npm run sync && npm run build"
+    "prepublishOnly": "npm run sync && npm run build",
+    "typecheck:ts": "npm run typecheck --workspaces --if-present",
+    "lint:ts": "eslint packages",
+    "format:check:ts": "prettier --check packages .prettierrc.json eslint.config.mjs tsconfig.base.json",
+    "format:ts": "prettier --write packages .prettierrc.json eslint.config.mjs tsconfig.base.json"
   },
   "keywords": [
     "compiler",
@@ -66,6 +70,15 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "prettier": "^3.8.1"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.0.3",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.8.1",
+    "tsdown": "^0.23.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2"
   }
 }
